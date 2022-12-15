@@ -2,18 +2,11 @@ import express, { Request, Response } from "express";
 import db from "../../data-source";
 import bcrypt from "bcrypt";
 import { Users } from "../../entities/Users";
-import session from "express-session";
-
-// interface UserSession {
-//   id?: string;
-//   name?: string;
-//   username?: string;
-// }
 
 declare global {
   namespace Express {
     interface Request {
-      user?: Record<string, any>;
+      users?: Record<string, any>;
     }
   }
 }

@@ -29,6 +29,7 @@
     "@types/passport": "^1.0.11",
     "@types/passport-facebook": "^2.1.11",
     "@types/passport-google-oauth20": "^2.0.11",
+    "axios": "^1.2.1",
     "bcrypt": "^5.1.0",
     "cookie-session": "^2.0.0",
     "express": "^4.18.2",
@@ -40,6 +41,8 @@
     "passport": "^0.6.0",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
+    "passport-line": "^0.0.4",
+    "passport-line-auth": "^0.2.9",
     "socket.io": "^4.5.3",
     "socket.io-client": "^4.5.3",
     "typeorm": "^0.3.7"

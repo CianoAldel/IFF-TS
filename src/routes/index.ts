@@ -5,7 +5,7 @@ import auction from "./auction/index";
 import category from "./category/index";
 import dashboard from "./dashboard/index";
 import auth from "./auth/index";
-import authGoogle from "./auth/auth";
+import authorization from "./auth/auth";
 import product from "./product/index";
 import species from "./species/index";
 import storage from "./storage/index";
@@ -22,7 +22,7 @@ const defaultRoutes: string | any[] = [
   { route: "/category", path: category },
   { route: "/dashboard", path: dashboard },
   { route: "/auth", path: auth },
-  { route: "/authGoogle", path: authGoogle },
+  { route: "/authorization", path: authorization },
   { route: "/product", path: product },
   { route: "/species", path: species },
   { route: "/storage", path: storage },

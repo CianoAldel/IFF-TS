@@ -17,7 +17,8 @@ app.use(
     secret:
       "9cd69957c13cf9a5abc1dce3bbec21f7159998964455fbcc60eabe598a43d0b99bc24e6a8a9714a3c336314f27db18e0b888463aaa5075929e215e6d05d813e0",
     saveUninitialized: true,
-    cookie: { maxAge: 24 * 60 * 60 * 100 },
+    cookie: { maxAge: 24 * 60 * 60 * 14000 },
+
     resave: false,
   })
 );

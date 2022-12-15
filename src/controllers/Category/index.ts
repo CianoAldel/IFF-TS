@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 
 import db from "../../data-source";
-
-// import * as utils from "../PaymentController/utils/index";
-// import { Products } from "../../entity/Products";
 import { Categories } from "../../entities/Categories";
 
 const categoryController = {

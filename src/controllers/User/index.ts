@@ -5,8 +5,6 @@ import { Equal, IsNull } from "typeorm";
 import { Userinfos } from "../../entities/Userinfos";
 import { Addresses } from "../../entities/Addresses";
 import { Auctions } from "../../entities/Auctions";
-import { Accounts } from "../../entities/Accounts";
-import { Products } from "../../entities/Products";
 import { Biddings } from "../../entities/Biddings";
 
 interface Bidder {
@@ -45,7 +43,7 @@ const userController = {
   update: async (req: Request, res: Response) => {
     const { name, firstName, lastName, phone } = req.body;
 
-    const user = await db.getRepository(Users).findOneBy({ id: req.user!.id });
+    const user = await db.getRepository(Users).findOneBy({ id: req.users!.id });
 
     user!.name = name;
 
@@ -53,11 +51,11 @@ const userController = {
 
     await db.getRepository(Users).save(user);
 
-    const userInfos = await db.getRepository(Userinfos).findOneBy({ user_id: req.user!.id });
+    const userInfos = await db.getRepository(Userinfos).findOneBy({ user_id: req.users!.id });
 
     if (!userInfos) {
       const myUserInfos = new Userinfos();
-      myUserInfos.user_id = req.user!.id;
+      myUserInfos.user_id = req.users!.id;
       myUserInfos.firstName = firstName;
       myUserInfos.lastName = lastName;
       myUserInfos.phone = phone;
@@ -75,7 +73,7 @@ const userController = {
   },
   address: {
     index: async (req: Request, res: Response) => {
-      const { id } = req.user!;
+      const { id } = req.users!;
       const addresses = await db.getRepository(Addresses).find({
         order: { createdAt: "DESC" },
         where: {
@@ -99,7 +97,7 @@ const userController = {
       const info = `${object.district},${object.amphoe},${object.province},${object.zipcode}`;
 
       const address = new Addresses();
-      address.user_id = req.user!.id;
+      address.user_id = req.users!.id;
       address.name = object.name;
       address.phone = object.phone;
       address.address = object.address;
@@ -116,12 +114,9 @@ const userController = {
   auction: {
     index: async (req: Request, res: Response) => {
       // const { id } = req.user;
-
       // res.json(query);
       let winner = null; //req.param
       let id = 24; // req.user.id
-
-      // console.log(id, winner);
 
       const query = await db
         .getRepository(Auctions)

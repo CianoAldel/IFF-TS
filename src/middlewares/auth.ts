@@ -20,6 +20,8 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
     },
   });
 
+  console.log(auth);
+
   if (!auth) {
     req.session.destroy((err) => {
       console.log(err);

@@ -8,7 +8,7 @@ passport.use(
     {
       clientID: `${process.env.GOOGLE_CLIENT_ID}`,
       clientSecret: `${process.env.GOOGLE_CLIENT_SECRET}`,
-      callbackURL: "/authGoogle/google/callback",
+      callbackURL: "/authorization/google/callback",
     },
     function (accessToken, refreshToken, profile, done) {
       console.log(profile);
@@ -23,7 +23,7 @@ passport.use(
     {
       clientID: `${process.env.FACEBOOK_CLIENT_ID}`,
       clientSecret: `${process.env.FACEBOOK_CLIENT_SECRET}`,
-      callbackURL: "/auth/facebook/callback",
+      callbackURL: "/authorization/facebook/callback",
     },
     function (accessToken, refreshToken, profile, done) {
       done(null, profile);
