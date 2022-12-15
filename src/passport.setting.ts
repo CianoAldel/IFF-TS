@@ -11,8 +11,7 @@ passport.use(
       callbackURL: "/authorization/google/callback",
     },
     function (accessToken, refreshToken, profile, done) {
-      console.log(profile);
-
+      //insert to database
       done(null, profile);
     }
   )
@@ -26,6 +25,7 @@ passport.use(
       callbackURL: "/authorization/facebook/callback",
     },
     function (accessToken, refreshToken, profile, done) {
+      //insert to database
       done(null, profile);
     }
   )

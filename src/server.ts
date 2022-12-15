@@ -4,21 +4,18 @@ import cookieSession = require("cookie-session");
 import express, { Application, Request, Response } from "express";
 import routes from "./routes";
 import * as sockets from "./libs/socket.io/socket.io";
-// import { session } from "./libs/session";
 const app: Application = express();
 const PORT: string = process.env.PORT || "5001";
 import "./passport.setting";
 import passport = require("passport");
 import sessions = require("express-session");
 
-// app.use(cookieSession({ name: "session", keys: ["INTERKOIFARM"], maxAge: 24 * 60 * 60 * 100 }));
 app.use(
   sessions({
     secret:
       "9cd69957c13cf9a5abc1dce3bbec21f7159998964455fbcc60eabe598a43d0b99bc24e6a8a9714a3c336314f27db18e0b888463aaa5075929e215e6d05d813e0",
     saveUninitialized: true,
     cookie: { maxAge: 24 * 60 * 60 * 14000 },
-
     resave: false,
   })
 );
