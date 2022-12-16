@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.ts",
-  "engines": {
-    "node": "14.x"
-  },
   "scripts": {
     "dev": "nodemon ./src/server.ts",
     "build": "tsc -p .",

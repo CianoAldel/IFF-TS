@@ -1,6 +1,7 @@
 import { Router } from "express";
 const routes = Router();
 
+import index from "./index/index";
 import auction from "./auction/index";
 import category from "./category/index";
 import dashboard from "./dashboard/index";
@@ -18,6 +19,7 @@ import test from "./test/index";
 // console.log("path", auth);
 
 const defaultRoutes: string | any[] = [
+  { route: "/", path: index },
   { route: "/auction", path: auction },
   { route: "/category", path: category },
   { route: "/dashboard", path: dashboard },
