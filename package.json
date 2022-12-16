@@ -5,7 +5,7 @@
   "main": "server.ts",
   "scripts": {
     "dev": "nodemon ./src/server.ts",
-    "build": "tsc -p .",
+    "build": "tsc -p . --output public",
     "start": "node ./src/server.ts"
   },
   "keywords": [],
