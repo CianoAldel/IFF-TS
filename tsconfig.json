@@ -9,7 +9,7 @@
     "noUnusedParameters": false,
     "preserveWatchOutput": true,
     "rootDir": "src",
-    "outDir": "build",
+    "outDir": "public",
     "strict": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
