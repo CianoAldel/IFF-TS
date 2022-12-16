@@ -1,6 +1,5 @@
 {
   "build": "npm run build",
-  "test": "npm test",
   "env": {
     "NODE_ENV": "production",
     "API_KEY": "abcdefgh"
