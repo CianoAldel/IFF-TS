@@ -1,7 +1,12 @@
 {
-  "build": "npm run build",
-  "env": {
-    "NODE_ENV": "production",
-    "API_KEY": "abcdefgh"
-  }
+  "version": 2,
+  "builds": [
+    {
+      "src": "./src/*",
+      "use": "@vercel/node",
+      "config": {
+        "directoryListing": true
+      }
+    }
+  ]
 }
