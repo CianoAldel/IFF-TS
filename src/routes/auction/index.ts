@@ -3,8 +3,8 @@ import { Router } from "express";
 const router = Router();
 
 router.get("/", auctionController.index);
-router.get("/:id", auctionController.index);
-router.get("/:product_id", auctionController.index);
+router.get("/:id", auctionController.show);
+router.get("/:product_id", auctionController.update);
 router.get("/", auctionController.destroy);
 router.get("/:product_id/status", auctionController.index);
 

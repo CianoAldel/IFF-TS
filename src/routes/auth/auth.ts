@@ -46,14 +46,11 @@ router.get(
   passport.authenticate("google", { successRedirect: CLIENT_URL, failureRedirect: "/login/failed" })
 );
 
-router.get("/facebook", passport.authenticate("facebook", { scope: ["profile"] }));
+router.get("/facebook", passport.authenticate("facebook", { scope: ["public_profile"] }));
 
 router.get(
   "/facebook/callback",
-  passport.authenticate("facebook", {
-    successRedirect: CLIENT_URL,
-    failureRedirect: "/login/failed",
-  })
+  passport.authenticate("facebook", { successRedirect: CLIENT_URL, failureRedirect: "/login/failed" })
 );
 
 router.get("/line/login/page", (req: Request, res: Response) => {

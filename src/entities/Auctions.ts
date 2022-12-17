@@ -13,31 +13,15 @@ import { Products } from "./Products";
 import { Biddings } from "./Biddings";
 import { Users } from "./Users";
 
-//   enum Channel {
-//     "topup",
-//     "event",
-//     "game",
-//     "reward",
-//     "privilege",
-//     "other",
-//     "product",
-//     "in-App Purchase",
-//     "airtime",
-//   }
-
 enum Status {
   "true",
   "false",
 }
 
-//   enum Type {
-//     'use', 'add'
-//   }
-
 @Entity()
 export class Auctions {
   @PrimaryGeneratedColumn("uuid")
-  id!: number;
+  id!: string;
 
   @Column("int", { nullable: true })
   product_id!: number;
@@ -48,8 +32,8 @@ export class Auctions {
   @Column("datetime", { nullable: true })
   updatedAt!: Date;
 
-  @Column("varchar", { nullable: true })
-  startPrice!: string;
+  @Column("int", { nullable: true })
+  startPrice!: number;
 
   @Column("datetime", { nullable: true })
   startDate!: string;
@@ -61,10 +45,13 @@ export class Auctions {
   biddingTime!: number;
 
   @Column("int", { nullable: true })
-  minBid!: Status;
+  minBid!: number;
 
   @Column("text", { nullable: true })
   status!: string;
+
+  @Column("datetime", { nullable: true })
+  endOfAuction!: string;
 
   @OneToMany(() => Biddings, (biddings) => biddings.auctions)
   biddings!: Biddings[];

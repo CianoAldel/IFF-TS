@@ -22,10 +22,13 @@ passport.use(
     {
       clientID: `${process.env.FACEBOOK_CLIENT_ID}`,
       clientSecret: `${process.env.FACEBOOK_CLIENT_SECRET}`,
-      callbackURL: "/authorization/facebook/callback",
+      callbackURL: "https://7143-2403-6200-8958-5146-306b-c5db-e1a2-5778.ap.ngrok.io/authorization/facebook/callback",
     },
     function (accessToken, refreshToken, profile, done) {
       //insert to database
+
+      console.log(profile);
+
       done(null, profile);
     }
   )
