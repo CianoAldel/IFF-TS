@@ -2,6 +2,8 @@ import db from "../../data-source";
 import { Request, Response } from "express";
 import { Auctions } from "../../entities/Auctions";
 import { Biddings } from "../../entities/Biddings";
+import { Users } from "../../entities/Users";
+import moment from "moment";
 
 interface AuctionRequest {
   biddingTime: number;
@@ -14,7 +16,7 @@ interface AuctionRequest {
 
 const auctionController = {
   index: async (req: Request, res: Response) => {
-    const query = db
+    const query = await db
       .getRepository(Auctions)
       .createQueryBuilder("auctions")
       .where("auctions.status = :status", { status: true })
@@ -37,17 +39,23 @@ const auctionController = {
       .addSelect((subquery) => {
         return subquery.from(Biddings, "biddings").select("SUM(bidding)").where(`auctions.id = biddings.auction_id`);
       }, "totalBidding")
-      .orderBy("auctions.createdAt", "DESC");
+      .orderBy("auctions.createdAt", "DESC")
+      .getRawAndEntities(); // getMany() depending on your style
 
-    const result = await query.getRawMany(); // getMany() depending on your style
+    if ((query.entities.length && query.raw.length) == 0) {
+      return res.json(query);
+    }
 
-    res.json(result);
+    const data = {
+      ...query.entities[0],
+      biddingCount: query.raw[0].biddingCount,
+      totalBidding: query.raw[0].totalBidding,
+    };
+    res.json(data);
   },
   update: async (req: Request, res: Response) => {
     const { product_id } = req.params;
     const auctionReqBody: AuctionRequest = req.body;
-    // console.log(auctionReqBody);
-
     const auction = await db.getRepository(Auctions).findOne({
       where: [
         {
@@ -94,13 +102,70 @@ const auctionController = {
         return subquery.from(Biddings, "biddings").select("SUM(bidding)").where(`auctions.id = biddings.auction_id`);
       }, "totalBidding")
       .innerJoinAndSelect("auctions.products", "products")
-      .innerJoinAndSelect("products.productimages", "productimages");
+      .innerJoinAndSelect("products.productimages", "productimages")
+      .getRawAndEntities();
 
-    if (!query) return res.status(404).json({ message: "ไม่พบข้อมูล" });
+    if ((query.entities.length && query.raw.length) == 0) return res.status(404).json({ message: "ไม่พบข้อมูล" });
 
-    res.json(query);
+    const data = {
+      ...query.entities[0],
+      biddingCount: query.raw[0].biddingCount,
+      totalBidding: query.raw[0].totalBidding,
+    };
+
+    res.json(data);
   },
   destroy: async (req: Request, res: Response) => {},
+  bidding: async (req: Request, res: Response) => {
+    const io = req.app.get("io");
+    console.log(io);
+    const user = req.user;
+    const userActive = await db.getRepository(Users).findOne({
+      where: {
+        // id: user!.id,
+        bidder: "true",
+      },
+    });
+    if (!userActive)
+      return res.status(401).json({
+        message: "คุณไม่มีสิทธิ์ใช้งาน \n กรุณาติดต่อ Admin เพื่อทำการยืนยันตัวตนก่อนประมูล",
+      });
+    const { id } = req.params;
+    const auction = await db.getRepository(Auctions).findOne({
+      where: { id: id, status: "true" },
+    });
+
+    if (!auction) return res.status(404).json({ message: "ไม่พบข้อมูล" });
+    const endDateAuction = moment(auction.endDate).unix();
+    if (endDateAuction < moment().unix()) return res.status(400).json({ message: "หมดเวลาการประมูล" });
+    const { amount } = req.body;
+    // return moment.duration(
+    //   Math.max(eventTime - Math.floor(moment().valueOf() / 1000), 0),
+    //   "seconds"
+    // );
+    const endAuction = moment.duration(Math.max(endDateAuction - Math.floor(moment().valueOf() / 1000), 0), "seconds");
+    if (endAuction.asSeconds() <= 20) {
+      auction.endDate = moment().add(auction.biddingTime, "seconds").format("YYYY-MM-DD HH:mm:ss");
+    }
+
+    const biddings = new Biddings();
+    // biddings.user_id = user!.id;
+    biddings.auction_id = auction.id;
+    biddings.bidding = amount;
+    const create = await db.getRepository(Biddings).save(biddings);
+
+    const bidding = await db
+      .getRepository(Biddings)
+      .createQueryBuilder("biddings")
+      .where("biddings.id = :id", { id: create.id })
+      .innerJoin("biddings.user", "user")
+      .getOne();
+
+    io.to(auction.id).emit(`bidding`, { bidding: bidding });
+    await db.getRepository(Auctions).save(auction);
+
+    res.json(auction);
+  },
 };
 
 export default auctionController;

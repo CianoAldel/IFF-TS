@@ -43,7 +43,9 @@ const userController = {
   update: async (req: Request, res: Response) => {
     const { name, firstName, lastName, phone } = req.body;
 
-    const user = await db.getRepository(Users).findOneBy({ id: req.users!.id });
+    const user = await db.getRepository(Users).findOneBy({
+      // id: req.user!.id
+    });
 
     user!.name = name;
 
@@ -51,11 +53,13 @@ const userController = {
 
     await db.getRepository(Users).save(user);
 
-    const userInfos = await db.getRepository(Userinfos).findOneBy({ user_id: req.users!.id });
+    const userInfos = await db.getRepository(Userinfos).findOneBy({
+      //  user_id: req.user!.id
+    });
 
     if (!userInfos) {
       const myUserInfos = new Userinfos();
-      myUserInfos.user_id = req.users!.id;
+      // myUserInfos.user_id = req.user!.id;
       myUserInfos.firstName = firstName;
       myUserInfos.lastName = lastName;
       myUserInfos.phone = phone;
@@ -73,11 +77,11 @@ const userController = {
   },
   address: {
     index: async (req: Request, res: Response) => {
-      const { id } = req.users!;
+      // const { id } = req.user!;
       const addresses = await db.getRepository(Addresses).find({
         order: { createdAt: "DESC" },
         where: {
-          user_id: id,
+          // user_id: id,
         },
       });
 
@@ -97,7 +101,7 @@ const userController = {
       const info = `${object.district},${object.amphoe},${object.province},${object.zipcode}`;
 
       const address = new Addresses();
-      address.user_id = req.users!.id;
+      // address.user_id = req.user!.id;
       address.name = object.name;
       address.phone = object.phone;
       address.address = object.address;

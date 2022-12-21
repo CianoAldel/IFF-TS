@@ -3,14 +3,6 @@ import db from "../../data-source";
 import bcrypt from "bcrypt";
 import { Users } from "../../entities/Users";
 
-declare global {
-  namespace Express {
-    interface Request {
-      users?: Record<string, any>;
-    }
-  }
-}
-
 declare module "express-session" {
   export interface SessionData {
     user: { [key: string]: any };

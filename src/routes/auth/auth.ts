@@ -1,4 +1,4 @@
-import { NextFunction, Router } from "express";
+import { NextFunction, request, Router } from "express";
 const router = Router();
 import passport = require("passport");
 import { Request, Response } from "express";
@@ -7,6 +7,15 @@ import qs from "qs";
 import "dotenv/config";
 
 const CLIENT_URL = "http://localhost:3000/";
+
+var dataUser: string | any;
+
+router.use((req, res, next) => {
+  req.user = dataUser;
+  const data = req.user;
+  console.log("router.use req.user", data);
+  next();
+});
 
 //checkNotAuthenticated || checkAuthenticated
 
@@ -21,6 +30,7 @@ router.get("/login/success", (req: Request, res: Response) => {
       user: req.user,
     });
   }
+  // res.redirect(CLIENT_URL);
 });
 
 router.get("/login/failed", (req: Request, res: Response) => {
@@ -43,7 +53,12 @@ router.get("/google", passport.authenticate("google", { scope: ["profile"] }));
 
 router.get(
   "/google/callback",
-  passport.authenticate("google", { successRedirect: CLIENT_URL, failureRedirect: "/login/failed" })
+  passport.authenticate("google", { failureRedirect: "/authorization/login/failed" }),
+  (req: Request, res: Response, next: NextFunction) => {
+    const data = req.user;
+    dataUser = data;
+    res.redirect(CLIENT_URL);
+  }
 );
 
 router.get("/facebook", passport.authenticate("facebook", { scope: ["public_profile"] }));
