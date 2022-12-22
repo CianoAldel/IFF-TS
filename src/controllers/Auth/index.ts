@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import db from "../../data-source";
 import bcrypt from "bcrypt";
 import { Users } from "../../entities/Users";
+import passport = require("passport");
 
 declare module "express-session" {
   export interface SessionData {
@@ -10,41 +11,6 @@ declare module "express-session" {
 }
 
 const authController = {
-  login: async (req: Request, res: Response) => {
-    const objects: { username: string; password: string } = req.body;
-
-    try {
-      const user = await db.getRepository(Users).findOne({
-        where: {
-          username: objects.username,
-        },
-      });
-      if (!user) {
-        return res.status(422).json({
-          message: "username or password is incorrect.",
-          code: "422",
-        });
-      }
-      if (!bcrypt.compareSync(objects.password, user.password)) {
-        return res.status(422).json({
-          message: "username or password is incorrect.",
-          code: "422",
-        });
-      }
-      req.session.user = user;
-      req.session.save();
-
-      res
-        .status(200)
-        .json({
-          isLoggedIn: true,
-          data: user,
-        })
-        .end();
-    } catch (error) {
-      console.log("error", error);
-    }
-  },
   logout: async (req: Request, res: Response) => {
     req.session.destroy((err) => {
       console.log(err);

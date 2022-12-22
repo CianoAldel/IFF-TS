@@ -1,12 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
-  ManyToOne,
-} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 import { Users } from "./Users";
 
 @Entity()
@@ -53,8 +45,8 @@ export class Accounts {
   @Column("datetime", { nullable: true })
   updatedAt!: string;
 
-  // @ManyToOne(() => Users, (user) => user.accounts, {
-  //   createForeignKeyConstraints: true,
-  // })
-  // user!: Users;
+  @ManyToOne(() => Users, (user) => user.accounts, {
+    createForeignKeyConstraints: true,
+  })
+  user!: Users;
 }

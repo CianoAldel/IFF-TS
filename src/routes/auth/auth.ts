@@ -5,10 +5,17 @@ import { Request, Response } from "express";
 import axios from "axios";
 import qs from "qs";
 import "dotenv/config";
-
+import db from "../../data-source";
+import { Accounts } from "../../entities/Accounts";
+import { Users } from "../../entities/Users";
 const CLIENT_URL = "http://localhost:3000/";
 
-var dataUser: string | any;
+interface LineData {
+  value: string;
+}
+interface LineDatas extends Array<LineData> {}
+
+let dataUser: string | any;
 
 router.use((req, res, next) => {
   req.user = dataUser;
@@ -45,7 +52,8 @@ router.get("/logout", (req: Request, res: Response, next: NextFunction) => {
     if (err) {
       return next(err);
     }
-    res.redirect(CLIENT_URL);
+    dataUser = null;
+    res.redirect(`${CLIENT_URL}login`);
   });
 });
 
@@ -65,7 +73,15 @@ router.get("/facebook", passport.authenticate("facebook", { scope: ["public_prof
 
 router.get(
   "/facebook/callback",
-  passport.authenticate("facebook", { successRedirect: CLIENT_URL, failureRedirect: "/login/failed" })
+  passport.authenticate(
+    "facebook",
+    { failureRedirect: "/login/failed" },
+    (req: Request, res: Response, next: NextFunction) => {
+      const data = req.user;
+      dataUser = data;
+      res.redirect(CLIENT_URL);
+    }
+  )
 );
 
 router.get("/line/login/page", (req: Request, res: Response) => {
@@ -118,13 +134,26 @@ router.get("/line/verify", (req: Request, res: Response) => {
         },
       }
     )
-    .then((response) => {
+    .then(async (response) => {
       //insert to database
-      res.json(response.data);
+      if (response.data) {
+        const user = db.getRepository(Users).findOne({ where: { name: response.data } });
+      }
+
+      const photos: LineDatas = [{ value: `${response.data.picture}` }];
+      const data = {
+        photos: photos,
+        displayName: response.data.name,
+      };
+      dataUser = data;
+
+      res.redirect(CLIENT_URL);
     })
     .catch((err) => {
       res.json(err);
     });
+
+  router.get("/line", (req, res, next) => {});
 });
 
 export default router;

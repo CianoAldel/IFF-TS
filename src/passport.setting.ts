@@ -1,7 +1,29 @@
 import passport = require("passport");
 import GoogleStrategy = require("passport-google-oauth20");
 import FacebookStrategy = require("passport-facebook");
+import LocalStrategy = require("passport-local");
 import "dotenv/config";
+import db from "./data-source";
+import { Users } from "./entities/Users";
+import bcrypt = require("bcrypt");
+
+passport.use(
+  new LocalStrategy.Strategy(async (username: string, password: string, done) => {
+    const dataUser = await db.getRepository(Users).findOne({ where: { username: username } });
+    if (dataUser == null) {
+      return done(null, false, { message: "No user with that username" });
+    }
+    try {
+      if (await bcrypt.compare(password, dataUser.password)) {
+        return done(null, dataUser);
+      } else {
+        return done(null, false, { message: "Password incorrect" });
+      }
+    } catch (e) {
+      return done(e);
+    }
+  })
+);
 
 passport.use(
   new GoogleStrategy.Strategy(
@@ -11,7 +33,6 @@ passport.use(
       callbackURL: "/authorization/google/callback",
     },
     function (accessToken, refreshToken, profile, done) {
-      // console.log("passport setting profile", profile);
       done(null, profile);
     }
   )
@@ -30,11 +51,9 @@ passport.use(
   )
 );
 
-passport.serializeUser((user: any, cb) => {
+passport.serializeUser((user: any, done) => {
   console.log("serializeUser");
-
-  // const data: Express.User = user;
-  cb(null, user);
+  done(null, user);
 });
 
 passport.deserializeUser((user: any, done) => {
