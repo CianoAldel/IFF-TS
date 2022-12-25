@@ -48,7 +48,7 @@ export class Users {
   email!: string;
 
   @Column("datetime", { nullable: true })
-  email_verified!: string;
+  email_verified!: Date;
 
   @Column("varchar", { nullable: true })
   image!: string;
@@ -61,9 +61,6 @@ export class Users {
 
   @OneToMany(() => Sessions, (session) => session.user_id)
   sessions!: Sessions[];
-
-  @OneToMany(() => Accounts, (account) => account.user_id)
-  accounts!: Accounts[];
 
   @OneToOne(() => Userinfos, (userinfos) => userinfos.user_id)
   userinfos!: Userinfos;

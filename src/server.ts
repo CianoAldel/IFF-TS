@@ -4,13 +4,14 @@ import express from "express";
 import routes from "./routes";
 const app = express();
 const PORT = process.env.PORT || 5001;
-import "./passport.setting";
 import passport = require("passport");
 import sessions = require("express-session");
 import { Server } from "socket.io";
 import http from "http";
-import cors from "cors";
+import cookieParser = require("cookie-parser");
 const server = http.createServer(app);
+import cors from "cors";
+import "./passport.setting";
 
 const io = new Server(server, { cors: { origin: "*" } });
 
@@ -36,6 +37,8 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cookieParser());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/", routes);

@@ -6,14 +6,16 @@ import axios from "axios";
 import qs from "qs";
 import "dotenv/config";
 import db from "../../data-source";
-import { Accounts } from "../../entities/Accounts";
 import { Users } from "../../entities/Users";
-const CLIENT_URL = "http://localhost:3000/";
+import { Accounts } from "../../entities/Accounts";
 
-interface LineData {
-  value: string;
-}
-interface LineDatas extends Array<LineData> {}
+// const CLIENT_URL = "https://login-page-test-five.vercel.app/";
+const CLIENT_URL = "http://localhost:3000";
+
+// interface LineData {
+//   value: string;
+// }
+// interface LineDatas extends Array<LineData> {}
 
 let dataUser: string | any;
 
@@ -24,11 +26,14 @@ router.use((req, res, next) => {
   next();
 });
 
+const scope = "profile%20openid%20email";
+
 //checkNotAuthenticated || checkAuthenticated
 
 let code: string;
 let token: string;
 
+//success login
 router.get("/login/success", (req: Request, res: Response) => {
   if (req.user) {
     res.status(200).json({
@@ -37,9 +42,9 @@ router.get("/login/success", (req: Request, res: Response) => {
       user: req.user,
     });
   }
-  // res.redirect(CLIENT_URL);
 });
 
+//failed login
 router.get("/login/failed", (req: Request, res: Response) => {
   res.status(401).json({
     success: false,
@@ -47,18 +52,21 @@ router.get("/login/failed", (req: Request, res: Response) => {
   });
 });
 
-router.get("/logout", (req: Request, res: Response, next: NextFunction) => {
+//logout
+router.get("/logout", async (req: Request, res: Response, next: NextFunction) => {
   req.logout(function (err) {
     if (err) {
       return next(err);
     }
-    dataUser = null;
-    res.redirect(`${CLIENT_URL}login`);
   });
+
+  res.redirect(`${CLIENT_URL}`); //client domain
 });
 
-router.get("/google", passport.authenticate("google", { scope: ["profile"] }));
+// send to google login
+router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
+// callback data form google login
 router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/authorization/login/failed" }),
@@ -69,31 +77,33 @@ router.get(
   }
 );
 
-router.get("/facebook", passport.authenticate("facebook", { scope: ["public_profile"] }));
+// send to facebook login
+router.get("/facebook", passport.authenticate("facebook", { scope: ["public_profile", "email"] }));
 
+// callback data form facebook login
 router.get(
   "/facebook/callback",
-  passport.authenticate(
-    "facebook",
-    { failureRedirect: "/login/failed" },
-    (req: Request, res: Response, next: NextFunction) => {
-      const data = req.user;
-      dataUser = data;
-      res.redirect(CLIENT_URL);
-    }
-  )
+  passport.authenticate("facebook", { failureRedirect: "/authorization/login/failed" }),
+  (req, res, next) => {
+    dataUser = req.user;
+    // res.redirect(CLIENT_URL); //return callback ไปที่ domain
+    res.redirect("/authorization/login/success");
+  }
 );
 
+//go to login page line
 router.get("/line/login/page", (req: Request, res: Response) => {
-  const loginUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${process.env.LINE_CLIENT_ID}&redirect_uri=http://localhost:5001/authorization/line/callback&state=12345abcde&scope=profile%20openid&nonce=09876xyz`;
+  const loginUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${process.env.LINE_CLIENT_ID}&redirect_uri=http://localhost:5001/authorization/line/callback&state=12345abcde&scope=${scope}&nonce=09876xyz`;
   res.redirect(loginUrl);
 });
 
+//callback code for get token line
 router.get("/line/callback", (req: Request, res: Response) => {
   code = req.query.code as string;
   res.redirect("/authorization/line/token");
 });
 
+//sign token
 router.get("/line/token", (req: Request, res: Response) => {
   axios
     .post(
@@ -101,7 +111,7 @@ router.get("/line/token", (req: Request, res: Response) => {
       qs.stringify({
         grant_type: "authorization_code",
         code: code,
-        redirect_uri: "http://localhost:5001/authorization/line/callback",
+        redirect_uri: "http://localhost:5001/authorization/line/callback", // callback uri line developer
         client_id: process.env.LINE_CLIENT_ID,
         client_secret: process.env.LINE_CLIENT_SECRET,
       }),
@@ -120,6 +130,7 @@ router.get("/line/token", (req: Request, res: Response) => {
     });
 });
 
+//verify token line
 router.get("/line/verify", (req: Request, res: Response) => {
   axios
     .post(
@@ -136,24 +147,51 @@ router.get("/line/verify", (req: Request, res: Response) => {
     )
     .then(async (response) => {
       //insert to database
-      if (response.data) {
-        const user = db.getRepository(Users).findOne({ where: { name: response.data } });
-      }
+      const data = response.data;
 
-      const photos: LineDatas = [{ value: `${response.data.picture}` }];
-      const data = {
-        photos: photos,
-        displayName: response.data.name,
-      };
-      dataUser = data;
+      await db
+        .getRepository(Users)
+        .findOne({ where: { name: data.name } })
+        .then(async (result) => {
+          if (!result) {
+            const users = new Users();
+            users.name = data.name;
+            users.role = "user";
+            users.createdAt = new Date();
+            users.updatedAt = new Date();
+            users.email = data.email;
+            users.image = data.image;
+            // users.bidder = "";
 
-      res.redirect(CLIENT_URL);
+            const user = await db.getRepository(Users).save(users);
+            console.log("save user");
+
+            const accounts = new Accounts();
+            accounts.type = "oauth";
+            accounts.provider = "line";
+            accounts.provider_account_id = data.sub;
+            accounts.refresh_token = "";
+            accounts.access_token = "";
+            accounts.expires_at = data.exp;
+            accounts.token_type = "Bearer";
+            accounts.scope = "profile,email";
+            accounts.id_token = token; //token need length data in field data
+            accounts.user_id = user.id.toString();
+            accounts.createdAt = new Date();
+            accounts.updatedAt = new Date();
+
+            await db.getRepository(Accounts).save(accounts);
+
+            dataUser = user;
+            res.redirect("/authorization/login/success");
+          }
+          dataUser = result;
+        });
+      res.redirect("/authorization/login/success");
     })
     .catch((err) => {
       res.json(err);
     });
-
-  router.get("/line", (req, res, next) => {});
 });
 
 export default router;

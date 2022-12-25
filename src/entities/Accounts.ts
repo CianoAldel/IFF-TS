@@ -40,13 +40,8 @@ export class Accounts {
   user_id!: string;
 
   @Column("datetime", { nullable: true })
-  createdAt!: string;
+  createdAt!: Date;
 
   @Column("datetime", { nullable: true })
-  updatedAt!: string;
-
-  @ManyToOne(() => Users, (user) => user.accounts, {
-    createForeignKeyConstraints: true,
-  })
-  user!: Users;
+  updatedAt!: Date;
 }

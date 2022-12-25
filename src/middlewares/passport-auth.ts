@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
 const authenticationMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  console.log("middleware req.user", req.user);
+
   if (req.isAuthenticated()) {
     return next();
   }
