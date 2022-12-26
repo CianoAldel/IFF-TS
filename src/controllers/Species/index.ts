@@ -87,7 +87,17 @@ const speciesController = {
         return subquery.from(Biddings, "biddings").select("SUM(bidding)").where(`auctions.id = biddings.auction_id`);
       }, "totalBidding");
 
-    const result = await query.getRawOne(); // or getRawOne you can see allias in biddings
+    const result = await query.getRawAndEntities(); // or getRawOne you can see allias in biddings
+
+    if ((result.entities.length && result.raw.length) == 0) {
+      return res.json(query);
+    }
+    const data = {
+      ...result.entities[0],
+      biddingCount: result.raw[0].biddingCount,
+      totalBidding: result.raw[0].totalBidding,
+    };
+
     if (!result) return res.status(404).json({ message: "ไม่พบข้อมูล" });
 
     res.json(result);

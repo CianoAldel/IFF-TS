@@ -118,11 +118,13 @@ const auctionController = {
   destroy: async (req: Request, res: Response) => {},
   bidding: async (req: Request, res: Response) => {
     const io = req.app.get("io");
+
     console.log(io);
+
     const user = req.user;
     const userActive = await db.getRepository(Users).findOne({
       where: {
-        // id: user!.id,
+        id: 45,
         bidder: "true",
       },
     });
@@ -137,21 +139,30 @@ const auctionController = {
 
     if (!auction) return res.status(404).json({ message: "ไม่พบข้อมูล" });
     const endDateAuction = moment(auction.endDate).unix();
-    if (endDateAuction < moment().unix()) return res.status(400).json({ message: "หมดเวลาการประมูล" });
+    console.log("auction", moment(auction.endDate));
+
+    console.log("end auction", moment());
+    if (endDateAuction < moment().unix()) return res.json({ message: "หมดเวลาการประมูล" });
+
     const { amount } = req.body;
+
     // return moment.duration(
     //   Math.max(eventTime - Math.floor(moment().valueOf() / 1000), 0),
     //   "seconds"
     // );
     const endAuction = moment.duration(Math.max(endDateAuction - Math.floor(moment().valueOf() / 1000), 0), "seconds");
+
     if (endAuction.asSeconds() <= 20) {
       auction.endDate = moment().add(auction.biddingTime, "seconds").format("YYYY-MM-DD HH:mm:ss");
     }
 
     const biddings = new Biddings();
-    // biddings.user_id = user!.id;
     biddings.auction_id = auction.id;
+    biddings.user_id = 45;
     biddings.bidding = amount;
+    biddings.createdAt = new Date();
+    biddings.updatedAt = new Date();
+
     const create = await db.getRepository(Biddings).save(biddings);
 
     const bidding = await db

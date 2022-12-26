@@ -14,7 +14,7 @@ import { Users } from "./Users";
 @Entity()
 export class Biddings {
   @PrimaryGeneratedColumn("increment")
-  id!: number;
+  id!: string;
 
   @Column("char", { nullable: true })
   auction_id!: string;
@@ -25,11 +25,11 @@ export class Biddings {
   @Column("int", { nullable: true })
   bidding!: number;
 
-  @Column("datetime", { nullable: true })
-  createdAt!: string;
+  @Column("varchar", { nullable: true })
+  createdAt!: Date;
 
-  @Column("datetime", { nullable: true })
-  updatedAt!: string;
+  @Column("varchar", { nullable: true })
+  updatedAt!: Date;
 
   @ManyToOne(() => Auctions, (auctions) => auctions.biddings)
   @JoinColumn({ name: "auction_id" })

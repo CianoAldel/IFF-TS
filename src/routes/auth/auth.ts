@@ -12,23 +12,16 @@ import { Accounts } from "../../entities/Accounts";
 // const CLIENT_URL = "https://login-page-test-five.vercel.app/";
 const CLIENT_URL = "http://localhost:3000";
 
-// interface LineData {
-//   value: string;
-// }
-// interface LineDatas extends Array<LineData> {}
-
 let dataUser: string | any;
 
 router.use((req, res, next) => {
   req.user = dataUser;
   const data = req.user;
-  console.log("router.use req.user", data);
+  // console.log("router.use req.user", data);
   next();
 });
 
 const scope = "profile%20openid%20email";
-
-//checkNotAuthenticated || checkAuthenticated
 
 let code: string;
 let token: string;

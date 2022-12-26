@@ -141,6 +141,14 @@ const userController = {
         )
         .getRawOne();
 
+      // if ((query.entities.length && query.raw.length) == 0) return res.status(404).json({ message: "ไม่พบข้อมูล" });
+
+      // const data = {
+      //   ...query.entities[0],
+      //   biddingCount: query.raw[0].biddingCount,
+      //   totalBidding: query.raw[0].totalBidding,
+      // };
+
       res.json(query);
     },
   },

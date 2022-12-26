@@ -1,5 +1,4 @@
 import "dotenv/config";
-// @ts-ignore
 import express from "express";
 import routes from "./routes";
 const app = express();
@@ -17,12 +16,12 @@ const io = new Server(server, { cors: { origin: "*" } });
 
 app.set("origins", "*:*");
 
-// const corsOptions = {
-//   origin: "*",
-//   credentials: true, //access-control-allow-credentials:true
-//   optionSuccessStatus: 200,
-// };
-// app.use(cors(corsOptions));
+const corsOptions = {
+  origin: "*",
+  credentials: true, //access-control-allow-credentials:true
+  optionSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
 
 app.use(
   sessions({
@@ -43,10 +42,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/", routes);
 
-io.on("connection", () => {
-  console.log("user a connection");
-});
+app.set("io", io);
 
 server.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
+});
+
+io.on("connection", (socket) => {
+  console.log("user connection", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+
+  socket.on("joinAuction", (payload) => {
+    socket.join(payload.auctionId);
+    console.log(payload);
+  });
 });
