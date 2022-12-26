@@ -41,6 +41,7 @@ passport.use(
           if (result) {
             return done(null, result);
           }
+
           const users = new Users();
           users.name = profile.displayName;
           users.role = "user";
@@ -127,13 +128,13 @@ passport.use(
   )
 );
 
-passport.serializeUser((user: any, done) => {
+passport.serializeUser((user: Express.User, done) => {
   console.log("serializeUser");
 
   done(null, user);
 });
 
-passport.deserializeUser((user: any, done) => {
+passport.deserializeUser((user: Express.User, done) => {
   console.log("deserializeUser", user);
 
   done(null, user);

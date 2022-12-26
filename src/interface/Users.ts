@@ -1,7 +1,18 @@
-interface Users {
+type User = {
+  id: number;
   username: string;
-  password: string;
   displayName: string;
-}
+  name: string;
+  password: string;
+  role: string;
+  createdAt: Date;
+  updateAt: Date;
+  email: string;
+  email_verified: Date;
+  image: string;
+  bidder: string;
+};
 
-export type { Users };
+// const userMap = new Map<string, User>();
+
+export = User;

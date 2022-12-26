@@ -43,8 +43,10 @@ const userController = {
   update: async (req: Request, res: Response) => {
     const { name, firstName, lastName, phone } = req.body;
 
-    const user = await db.getRepository(Users).findOneBy({
-      // id: req.user!.id
+    const user = await db.getRepository(Users).findOne({
+      where: {
+        id: req.user!.id,
+      },
     });
 
     user!.name = name;
@@ -139,17 +141,17 @@ const userController = {
             ? `((SELECT biddings.user_id FROM Biddings WHERE biddings.auction_id = auctions.id ORDER BY createdAt DESC LIMIT 1) <> ${id})`
             : `((SELECT biddings.user_id FROM Biddings WHERE biddings.auction_id = auctions.id ORDER BY createdAt DESC LIMIT 1) = ${id} AND TIMESTAMPDIFF(SECOND, now(), endDate) <= 0)`
         )
-        .getRawOne();
+        .getRawAndEntities();
 
-      // if ((query.entities.length && query.raw.length) == 0) return res.status(404).json({ message: "ไม่พบข้อมูล" });
+      if ((query.entities.length && query.raw.length) == 0) return res.status(404).json({ message: "ไม่พบข้อมูล" });
 
-      // const data = {
-      //   ...query.entities[0],
-      //   biddingCount: query.raw[0].biddingCount,
-      //   totalBidding: query.raw[0].totalBidding,
-      // };
+      const data = {
+        ...query.entities[0],
+        biddingCount: query.raw[0].biddingCount,
+        totalBidding: query.raw[0].totalBidding,
+      };
 
-      res.json(query);
+      res.json(data);
     },
   },
   delete: async (req: Request, res: Response) => {

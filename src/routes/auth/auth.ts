@@ -8,26 +8,46 @@ import "dotenv/config";
 import db from "../../data-source";
 import { Users } from "../../entities/Users";
 import { Accounts } from "../../entities/Accounts";
-
-// const CLIENT_URL = "https://login-page-test-five.vercel.app/";
 const CLIENT_URL = "http://localhost:3000";
 
-let dataUser: string | any;
+declare global {
+  namespace Express {
+    interface User {
+      id: number;
+      username: string;
+      displayName: string;
+      name: string;
+      password: string;
+      role: string;
+      createdAt: Date;
+      updatedAt: Date;
+      email: string;
+      email_verified: Date;
+      image: string;
+      bidder: string;
+    }
+  }
+}
 
-router.use((req, res, next) => {
-  req.user = dataUser;
-  const data = req.user;
-  // console.log("router.use req.user", data);
-  next();
-});
+//assign req.user
 
-const scope = "profile%20openid%20email";
+// let dataUser: Express.User;
+
+// router.use((req, res, next) => {
+//   console.log("set to middleware", req.user);
+//   req.user = data;
+//   next();
+// });
+
+const scope = "profile%20openid%20email"; //line scope
 
 let code: string;
 let token: string;
 
 //success login
 router.get("/login/success", (req: Request, res: Response) => {
+  console.log("req.user", req.user);
+
   if (req.user) {
     res.status(200).json({
       success: true,
@@ -64,9 +84,8 @@ router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/authorization/login/failed" }),
   (req: Request, res: Response, next: NextFunction) => {
-    const data = req.user;
-    dataUser = data;
-    res.redirect(CLIENT_URL);
+    // const data = req.user;
+    res.redirect("/authorization/login/success");
   }
 );
 
@@ -78,7 +97,6 @@ router.get(
   "/facebook/callback",
   passport.authenticate("facebook", { failureRedirect: "/authorization/login/failed" }),
   (req, res, next) => {
-    dataUser = req.user;
     // res.redirect(CLIENT_URL); //return callback ไปที่ domain
     res.redirect("/authorization/login/success");
   }
@@ -175,10 +193,10 @@ router.get("/line/verify", (req: Request, res: Response) => {
 
             await db.getRepository(Accounts).save(accounts);
 
-            dataUser = user;
+            // dataUser = user;
             res.redirect("/authorization/login/success");
           }
-          dataUser = result;
+          // dataUser = result!;
         });
       res.redirect("/authorization/login/success");
     })
