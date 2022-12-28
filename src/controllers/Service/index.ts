@@ -38,10 +38,10 @@ const serviceController = {
   show: async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    var convertIntToString: number = +id;
+    var convertStringToInt: number = +id;
     const data = await db.getRepository(Services).find({
       where: {
-        id: convertIntToString,
+        id: convertStringToInt,
       },
     });
     if (!data) return res.status(404).json({ message: "ไม่พบข้อมูล" });
@@ -69,7 +69,7 @@ const serviceController = {
   update: async (req: Request, res: Response) => {
     const { id } = req.params;
     var convertIntToString: number = +id;
-    const { title, content } = req.body;
+    const object: { title: string; content: string } = req.body;
 
     const data = await db.getRepository(Services).findOne({
       where: {
@@ -77,8 +77,8 @@ const serviceController = {
       },
     });
 
-    data!.title = title;
-    data!.content = content;
+    data!.title = object.title;
+    data!.content = object.content;
     data!.createdAt = new Date();
     data!.updatedAt = new Date();
 
@@ -88,9 +88,9 @@ const serviceController = {
   },
   destroy: async (req: Request, res: Response) => {
     const { id } = req.params;
-    var convertIntToString: number = +id;
+    var convertStringToInt: number = +id;
     // await models.Service.delete({ where: { id } })
-    const data = await db.getRepository(Services).findOne({ where: { id: convertIntToString } });
+    const data = await db.getRepository(Services).findOne({ where: { id: convertStringToInt } });
     useStorage.destroy("service", data?.cover!);
 
     await db.getRepository(Services).remove(data!);
@@ -99,9 +99,9 @@ const serviceController = {
   upload: async (req: Request, res: Response) => {
     const { id } = req.params;
     const cover = req.file!.filename;
-    var convertIntToString: number = +id;
+    var convertStringToInt: number = +id;
 
-    const data = await db.getRepository(Services).findOne({ where: { id: convertIntToString } });
+    const data = await db.getRepository(Services).findOne({ where: { id: convertStringToInt } });
     useStorage.destroy("service", data?.cover!);
 
     data!.cover = cover;

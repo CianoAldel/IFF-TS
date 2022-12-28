@@ -94,8 +94,8 @@ const speciesController = {
     }
     const data = {
       ...result.entities[0],
-      biddingCount: result.raw[0].biddingCount,
-      totalBidding: result.raw[0].totalBidding,
+      biddingCount: result.raw[0].biddingCount as number,
+      totalBidding: result.raw[0].totalBiddin as number,
     };
 
     if (!result) return res.status(404).json({ message: "ไม่พบข้อมูล" });

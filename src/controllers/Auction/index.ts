@@ -48,8 +48,8 @@ const auctionController = {
 
     const data = {
       ...query.entities[0],
-      biddingCount: query.raw[0].biddingCount,
-      totalBidding: query.raw[0].totalBidding,
+      biddingCount: query.raw[0].biddingCount as number,
+      totalBidding: query.raw[0].totalBidding as number,
     };
     res.json(data);
   },
@@ -109,8 +109,8 @@ const auctionController = {
 
     const data = {
       ...query.entities[0],
-      biddingCount: query.raw[0].biddingCount,
-      totalBidding: query.raw[0].totalBidding,
+      biddingCount: query.raw[0].biddingCount as number,
+      totalBidding: query.raw[0].totalBidding as number,
     };
 
     res.json(data);
@@ -118,9 +118,6 @@ const auctionController = {
   destroy: async (req: Request, res: Response) => {},
   bidding: async (req: Request, res: Response) => {
     const io = req.app.get("io");
-
-    console.log(io);
-
     const user = req.user;
     const userActive = await db.getRepository(Users).findOne({
       where: {
@@ -139,9 +136,9 @@ const auctionController = {
 
     if (!auction) return res.status(404).json({ message: "ไม่พบข้อมูล" });
     const endDateAuction = moment(auction.endDate).unix();
-    console.log("auction", moment(auction.endDate));
+    // console.log("auction", moment(auction.endDate));
 
-    console.log("end auction", moment());
+    // console.log("end auction", moment());
     if (endDateAuction < moment().unix()) return res.json({ message: "หมดเวลาการประมูล" });
 
     const { amount } = req.body;

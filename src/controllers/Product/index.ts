@@ -6,7 +6,7 @@ import { Productimages } from "../../entities/Productimages";
 
 interface Category {
   type: string;
-  cate_id: number;
+  cate_id?: number;
 }
 
 type Size = {
@@ -27,10 +27,7 @@ const productController = {
 
     var where: Partial<Category> = {
       type: "product",
-      cate_id: null as any,
     };
-
-    delete where["cate_id"];
 
     if (cate_id) {
       where = {
@@ -55,7 +52,7 @@ const productController = {
         updatedAt: true,
       },
       relations: ["productimages"],
-      where: { type: where.type, cate_id: where.cate_id },
+      where: { type: where.type, cate_id: where.cate_id! },
     });
 
     res.json(data);
