@@ -121,7 +121,7 @@ const auctionController = {
     const user = req.user;
     const userActive = await db.getRepository(Users).findOne({
       where: {
-        id: 45,
+        id: user?.id,
         bidder: "true",
       },
     });

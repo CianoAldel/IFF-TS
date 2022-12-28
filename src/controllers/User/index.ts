@@ -69,9 +69,9 @@ const userController = {
       myUserInfos.updatedAt = new Date();
       await db.getRepository(Userinfos).save(myUserInfos);
     } else {
-      userInfos.firstName = userInfos.firstName;
-      userInfos.lastName = userInfos.lastName;
-      userInfos.phone = userInfos.phone;
+      userInfos.firstName = objects.firstName;
+      userInfos.lastName = objects.lastName;
+      userInfos.phone = objects.phone;
       await db.getRepository(Userinfos).save(userInfos);
     }
 
