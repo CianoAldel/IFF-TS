@@ -9,7 +9,7 @@ router.get("/", authentication, speciesController.index);
 router.get("/:id", speciesController.show);
 router.post(
   "/",
-  [upload.fields([{ name: "certificate", maxCount: 1 }, { name: "filename[]" }])],
+  [upload.fields([{ name: "certificate", maxCount: 1 }, { name: "filenames" }])],
   speciesController.store
 );
 

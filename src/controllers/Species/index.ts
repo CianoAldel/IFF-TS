@@ -17,10 +17,25 @@ interface MulterRequest extends Request {
 // variable: File
 
 // solution 2#
+// declare global {
+//   namespace Express {
+//     interface Request {
+//       files?: any;
+//     }
+//   }
+// }
+
 declare global {
   namespace Express {
     interface Request {
-      files?: any;
+      files?: {
+        certificate?: [
+          {
+            filename: string;
+          }
+        ];
+        filename?: [{ filename: string }];
+      };
     }
   }
 }
@@ -134,11 +149,10 @@ const speciesController = {
       filename: string;
     } = req.body;
 
-    const certificate: Partial<Certificate> = {};
+    let certificate: string;
 
-    req.files.certificate;
-    if (req.files.certificate) {
-      certificate.certificate = req.files.certificate[0].filename;
+    if (req.files!.certificate) {
+      certificate = req.files!.certificate[0].filename;
     }
 
     const store = new Products();
@@ -154,14 +168,16 @@ const speciesController = {
     store.rate = objects.rate;
     store.sold = objects.sold;
     store.youtube = objects.youtube;
-    store.certificate = certificate.certificate as any | undefined;
+    store.certificate = certificate!;
     store.auctionOnly = objects.auctionOnly;
+    store.createdAt = new Date();
+    store.updatedAt = new Date();
 
     const data = await db.getRepository(Products).save(store);
 
     const images: Array<ImageFile> = [];
 
-    req.files["filename[]"].map((file: any, index: number) => {
+    req.files?.["filename"]!.map((file, index: number) => {
       if (objects.filename && typeof objects.filename[index] == "string") {
         images.push({
           product_id: data.id,
@@ -175,8 +191,17 @@ const speciesController = {
       });
     });
 
-    if (images.length > 0) {
-      await db.getRepository(Productimages).insert(images);
+    for (let i = 0; i < images.length; i++) {
+      if (images.length > 0) {
+        const storeImages = new Productimages();
+        storeImages.product_id = images[i].product_id;
+        storeImages.filename = images[i].filename;
+        storeImages.type = images[i].type!;
+        storeImages.createdAt = new Date();
+        storeImages.updatedAt = new Date();
+
+        await db.getRepository(Productimages).save(storeImages);
+      }
     }
     res.json(data);
   },

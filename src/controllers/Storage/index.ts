@@ -33,7 +33,7 @@ const storageController = {
 
     const images: Images[] = [];
 
-    req.files["filename[]"].map((file: any) => {
+    req.files?.["filename"]!.map((file: any) => {
       images.push({
         product_id: Number(id),
         filename: file.filename,

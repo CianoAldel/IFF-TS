@@ -68,10 +68,10 @@ export class Products {
   auctionOnly!: number;
 
   @Column("datetime", { nullable: true })
-  createdAt!: string;
+  createdAt!: Date;
 
   @Column("datetime", { nullable: true })
-  updatedAt!: string;
+  updatedAt!: Date;
 
   @OneToMany(() => Productimages, (productimages) => productimages.products)
   @JoinColumn({ name: "id" })
