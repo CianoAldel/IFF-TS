@@ -13,6 +13,10 @@ import {
 import { Productimages } from "./Productimages";
 import { Categories } from "./Categories";
 import { Auctions } from "./Auctions";
+import { Fishpond } from "./Fishpond";
+import { Fishgrow } from "./Fishgrow";
+import { Fishhealth } from "./Fishhealth";
+import { Fishschedules } from "./Fishschedules";
 
 @Entity()
 export class Products {
@@ -21,6 +25,9 @@ export class Products {
 
   @Column("int", { nullable: true })
   cate_id!: number;
+
+  @Column("int", { nullable: true })
+  pond_id!: number;
 
   @Column({ type: "varchar", enum: ["species", "product"], nullable: true })
   type!: string;
@@ -77,7 +84,23 @@ export class Products {
   @JoinColumn({ name: "id" })
   productimages!: Productimages[];
 
-  @ManyToOne(() => Categories, (categories) => categories.id)
+  @OneToMany(() => Fishgrow, (fishgrow) => fishgrow.products)
+  @JoinColumn({ name: "id" })
+  fishgrow!: Fishgrow[];
+
+  @OneToMany(() => Fishhealth, (fishhealth) => fishhealth.products)
+  @JoinColumn({ name: "id" })
+  fishhealth!: Fishhealth[];
+
+  @OneToMany(() => Fishschedules, (fishschedules) => fishschedules.products)
+  @JoinColumn({ name: "id" })
+  fishschedules!: Fishschedules[];
+
+  @ManyToOne(() => Fishpond, (fishpond) => fishpond.products)
+  @JoinColumn({ name: "pond_id" })
+  fishpond!: Fishpond;
+
+  @ManyToOne(() => Categories, (categories) => categories.products)
   @JoinColumn({ name: "cate_id" })
   categories!: Categories;
 

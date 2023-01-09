@@ -13,6 +13,10 @@ import storage from "./storage/index";
 import user from "./user/index";
 import member from "./member/index";
 import test from "./test/index";
+import fishgrow from "./fishgrow/index";
+import fishhealth from "./fishhealth/index";
+import fishpond from "./fishpond/index";
+import fishschedules from "./fishschedules/index";
 
 // import privilege from "./privilege/index";
 
@@ -30,6 +34,10 @@ const defaultRoutes: string | any[] = [
   { route: "/storage", path: storage },
   { route: "/user", path: user },
   { route: "/member", path: member },
+  { route: "/fishgrow", path: fishgrow },
+  { route: "/fishhealth", path: fishhealth },
+  { route: "/fishpond", path: fishpond },
+  { route: "/fishschedules", path: fishschedules },
   { route: "/test", path: test },
 ];
 
