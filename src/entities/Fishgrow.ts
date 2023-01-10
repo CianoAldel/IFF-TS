@@ -12,7 +12,7 @@ export class Fishgrow {
   id!: number;
 
   @Column({ type: "varchar", nullable: true })
-  products_id!: string;
+  product_id!: string;
 
   @Column("varchar", { nullable: true })
   width!: string;
@@ -39,6 +39,6 @@ export class Fishgrow {
   updatedAt!: Date;
 
   @ManyToOne(() => Products, (products) => products.id)
-  @JoinColumn({ name: "products_id" })
+  @JoinColumn({ name: "product_id" })
   products!: Products;
 }

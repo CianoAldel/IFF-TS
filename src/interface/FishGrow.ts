@@ -1,6 +1,6 @@
 export type FishGrowType = {
   id: number;
-  products_id: string;
+  product_id: string;
   width: string;
   length: number;
   grade: string;

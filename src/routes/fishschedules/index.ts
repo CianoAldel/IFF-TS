@@ -5,7 +5,8 @@ const router = Router();
 
 router.get("/", fishschedulesController.show);
 router.post("/add", fishschedulesController.add);
-router.post("/fish/update/:id", fishschedulesController.update);
-router.post("/fish/delete/:id", fishschedulesController.delete);
+router.post("/edit/:id", fishschedulesController.edit);
+router.post("/update/:id", fishschedulesController.update);
+router.post("/delete/:id", fishschedulesController.delete);
 
 export default router;

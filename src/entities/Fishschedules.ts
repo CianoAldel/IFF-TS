@@ -13,31 +13,36 @@ export class Fishschedules {
   id!: number;
 
   @Column("int", { nullable: true })
-  products_id!: number;
+  product_id!: number;
 
   @Column("int", { nullable: true })
-  user_id!: number;
-
-  @Column("varchar", { nullable: true })
-  pond_id!: string;
+  user_id!: number | null;
 
   @Column("int", { nullable: true })
-  event_name!: string;
+  pond_id!: number;
+
+  @Column("int", { nullable: true })
+  event_status!: string;
 
   @Column("datetime", { nullable: true })
   date_start!: Date;
 
-  @Column("varchar", { nullable: true })
-  date_end!: string;
+  @Column("datetime", { nullable: true })
+  date_end!: Date;
 
   @Column("varchar", { nullable: true })
   status!: string;
 
+  @Column("varchar", { nullable: true })
+  manage_status!: string;
+
+  date_status!: string;
+
   @ManyToOne(() => Products, (products) => products.fishschedules)
-  @JoinColumn({ name: "products_id" })
+  @JoinColumn({ name: "product_id" })
   products!: Products;
 
-  @ManyToOne(() => Products, (products) => products.fishpond)
+  @ManyToOne(() => Fishpond, (fishpond) => fishpond.fishschedules)
   @JoinColumn({ name: "pond_id" })
   fishpond!: Fishpond;
 }

@@ -12,7 +12,7 @@ export class Fishhealth {
   id!: number;
 
   @Column({ type: "varchar", nullable: true })
-  products_id!: string;
+  product_id!: string;
 
   @Column("int", { nullable: true })
   user_id!: number;
@@ -33,6 +33,6 @@ export class Fishhealth {
   updatedAt!: Date;
 
   @ManyToOne(() => Products, (products) => products.fishhealth)
-  @JoinColumn({ name: "products_id" })
+  @JoinColumn({ name: "product_id" })
   products!: Products;
 }

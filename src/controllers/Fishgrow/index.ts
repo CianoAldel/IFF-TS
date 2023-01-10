@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import db from "../../data-source";
 import { Fishgrow } from "../../entities/Fishgrow";
 import { FishGrowType } from "../../interface/FishGrow";
-import { TypedRequest } from "../../interface/TypedRequest";
+import { TypedRequestBody } from "../../interface/TypedRequest";
 
 const fishgrowController = {
   show: async (req: Request, res: Response) => {
@@ -15,10 +15,10 @@ const fishgrowController = {
     res.json(data);
   },
 
-  add: async (req: TypedRequest<FishGrowType>, res: Response) => {
+  add: async (req: TypedRequestBody<FishGrowType>, res: Response) => {
     const fishgrow = new Fishgrow();
 
-    fishgrow.products_id = req.body.products_id;
+    fishgrow.product_id = req.body.product_id;
     fishgrow.width = req.body.width;
     fishgrow.length = req.body.length;
     fishgrow.grade = req.body.grade;
@@ -29,6 +29,8 @@ const fishgrowController = {
     fishgrow.updatedAt = new Date();
 
     await db.getRepository(Fishgrow).save(fishgrow);
+
+    res.status(200).json({ success: "success" });
   },
 
   delete: async (req: Request, res: Response) => {
@@ -37,7 +39,8 @@ const fishgrowController = {
 
     res.status(200).json({ success: true, deleteId: id });
   },
-  update: async (req: TypedRequest<FishGrowType>, res: Response) => {
+  //Edit
+  update: async (req: TypedRequestBody<FishGrowType>, res: Response) => {
     const id = Number(req.body.id);
 
     const data = await db.getRepository(Fishgrow).findOneBy({
@@ -45,7 +48,7 @@ const fishgrowController = {
     });
 
     if (data) {
-      data.products_id = req.body.products_id;
+      data.product_id = req.body.product_id;
       data.width = req.body.width;
       data.length = req.body.length;
       data.grade = req.body.grade;

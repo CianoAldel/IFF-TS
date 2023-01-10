@@ -2,11 +2,6 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn, ManyToOn
 import { Products } from "./Products";
 import { Fishschedules } from "./Fishschedules";
 
-// enum Type {
-//   "species",
-//   "product",
-// }
-
 @Entity("fish_pond")
 export class Fishpond {
   @PrimaryGeneratedColumn("increment")
@@ -31,16 +26,16 @@ export class Fishpond {
   status!: string;
 
   @Column("datetime", { nullable: true })
-  createdAt!: string;
+  createdAt!: Date;
 
   @Column("datetime", { nullable: true })
-  updatedAt!: string;
+  updatedAt!: Date;
 
   @OneToMany(() => Fishschedules, (fishschedules) => fishschedules.fishpond)
   @JoinColumn({ name: "id" })
   fishschedules!: Fishschedules[];
 
-  @ManyToOne(() => Products, (products) => products.id)
-  @JoinColumn({ name: "products_id" })
+  @OneToMany(() => Products, (products) => products.id)
+  @JoinColumn({ name: "product_id" })
   products!: Products;
 }

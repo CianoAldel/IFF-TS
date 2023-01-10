@@ -74,6 +74,9 @@ export class Products {
   @Column("int", { nullable: true })
   auctionOnly!: number;
 
+  @Column("varchar", { nullable: true })
+  bloodline!: string;
+
   @Column("datetime", { nullable: true })
   createdAt!: Date;
 
