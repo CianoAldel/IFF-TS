@@ -28,24 +28,21 @@ const fishschedulesController = {
       const dateEnd = moment(element.date_end).format("YYYY-MM-DD");
       const currentDate = moment().format("YYYY-MM-DD");
 
+      const dateCheck =
+        Number(moment(element.date_end).format("YYYY-MM-DD").split("-")[2]) - Number(currentDate.split("-")[2]);
+
       if (currentDate == dateEnd) {
         element.date_status = "ToDay";
-      } else if (
-        Number(moment(element.date_end).format("YYYY-MM-DD").split("-")[2]) - Number(currentDate.split("-")[2]) ==
-        1
-      ) {
+      } else if (dateCheck == 1) {
         element.date_status = "Tomorrow";
-      } else if (
-        Number(moment(element.date_end).format("YYYY-MM-DD").split("-")[2]) - Number(currentDate.split("-")[2]) ==
-        -1
-      ) {
+      } else if (dateCheck - 1) {
         element.date_status = "Yesterday";
       } else {
         element.date_status = element.date_end.toISOString();
       }
     });
 
-    if (!result) return res.status(400).json("no status in your request");
+    if (!result) return res.status(400).json({ message: "no status in your request" });
 
     res.json(result);
   },
@@ -53,8 +50,6 @@ const fishschedulesController = {
   add: async (req: TypedRequestBody<Schedules>, res: Response) => {
     const data = req.body;
     const add = new Fishschedules();
-
-    // console.log(moment().toDate());
 
     add.product_id = data.product_id;
     add.pond_id = data.pond_id;
@@ -90,7 +85,7 @@ const fishschedulesController = {
       where: { id: Number(req.body.id) },
     });
 
-    if (!dataId) return res.status(400).json({ message: "not found data" });
+    if (!dataId) return res.status(400).json({ message: "Not found data" });
 
     dataId.event_status = req.body.event_status;
     dataId.date_end = req.body.date_end;
