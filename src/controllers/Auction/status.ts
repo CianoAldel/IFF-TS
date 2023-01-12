@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 
-// import * as utils from "../PaymentController/utils/index";
-
 import db from "../../data-source";
 import { Auctions } from "../../entities/Auctions";
 const auctionStatusController = {

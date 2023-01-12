@@ -28,7 +28,7 @@ export class Fishschedules {
   date_start!: Date;
 
   @Column("datetime", { nullable: true })
-  date_end!: Date;
+  date_schedules!: Date;
 
   @Column("varchar", { nullable: true })
   status!: string;
@@ -36,7 +36,14 @@ export class Fishschedules {
   @Column("varchar", { nullable: true })
   manage_status!: string;
 
-  date_status!: string;
+  @Column("datetime", { nullable: true })
+  repeat_date!: Date;
+
+  @Column("datetime", { nullable: true })
+  createdAt!: Date;
+
+  @Column("datetime", { nullable: true })
+  updatedAt!: Date;
 
   @ManyToOne(() => Products, (products) => products.fishschedules)
   @JoinColumn({ name: "product_id" })

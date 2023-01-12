@@ -25,6 +25,9 @@ export class Fishpond {
   @Column("varchar", { nullable: true })
   status!: string;
 
+  @Column("varchar", { nullable: true })
+  use_pond_date!: string;
+
   @Column("datetime", { nullable: true })
   createdAt!: Date;
 
@@ -35,7 +38,7 @@ export class Fishpond {
   @JoinColumn({ name: "id" })
   fishschedules!: Fishschedules[];
 
-  @OneToMany(() => Products, (products) => products.id)
-  @JoinColumn({ name: "product_id" })
+  @OneToMany(() => Products, (products) => products.fishpond)
+  @JoinColumn({ name: "id" })
   products!: Products;
 }

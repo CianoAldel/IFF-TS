@@ -15,7 +15,7 @@ router.post("/login", function (req: Request, res: Response, next: NextFunction)
       if (err) {
         return next(err);
       }
-      return res.redirect("/");
+      return res.redirect("/authorization/login/success");
     });
   })(req, res, next);
 });

@@ -8,7 +8,7 @@ router.get("/", auctionController.index);
 router.get("/:id", auctionController.show);
 router.get("/:product_id", auctionController.update);
 router.get("/", auctionController.destroy);
-router.post("/:product_id/status", auth, auctionStatusController.index);
+router.post("/:product_id/status", auctionStatusController.index);
 router.post("/:id/bid", auctionController.bidding);
 
 export default router;

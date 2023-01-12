@@ -46,8 +46,6 @@ let token: string;
 
 //success login
 router.get("/login/success", (req: Request, res: Response) => {
-  console.log("req.user", req.user);
-
   if (req.user) {
     res.status(200).json({
       success: true,

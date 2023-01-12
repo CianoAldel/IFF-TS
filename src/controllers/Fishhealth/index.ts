@@ -15,12 +15,12 @@ const fishhealthontroller = {
     res.json(data);
   },
 
-  add: async (req: TypedRequestBody<Fishhealth>, res: Response) => {
+  add: async (req: TypedRequestBody<FishHealthType>, res: Response) => {
     const fishgrow = new Fishhealth();
 
     fishgrow.product_id = req.body.product_id;
     fishgrow.status = req.body.status;
-    fishgrow.user_id = req.body.symptom;
+    fishgrow.symptom = req.body.symptom;
     fishgrow.status_health = req.body.status_health;
     fishgrow.createdAt = new Date();
     fishgrow.updatedAt = new Date();

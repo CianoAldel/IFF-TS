@@ -6,7 +6,7 @@ export type FishPondType = {
   schedules: Date;
   note: string;
   status: string;
-  date_start: Date;
+  use_pond_date: Date;
   createdAt: string;
   updatedAt: string;
 };

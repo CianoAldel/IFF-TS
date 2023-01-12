@@ -24,7 +24,6 @@ interface MulterRequest extends Request {
 //     }
 //   }
 // }
-
 declare global {
   namespace Express {
     interface Request {
@@ -150,6 +149,8 @@ const speciesController = {
     } = req.body;
 
     let certificate: string;
+
+    console.log("req.files species", req.files);
 
     if (req.files!.certificate) {
       certificate = req.files!.certificate[0].filename;

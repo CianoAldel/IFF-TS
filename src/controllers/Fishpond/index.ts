@@ -1,20 +1,32 @@
 import { Request, Response } from "express";
 import { Fishpond } from "../../entities/Fishpond";
 import { FishPondType } from "../../interface/FishPond";
-import { TypedRequestBody } from "../../interface/TypedRequest";
+import { TypedRequestBody, TypedRequestQuery } from "../../interface/TypedRequest";
 import db from "../../data-source";
+import { Like } from "typeorm";
 
 const fishpondController = {
   show: async (req: Request, res: Response) => {
     const data = await db.getRepository(Fishpond).find({
       relations: {
         products: true,
-        fishschedules: true,
+        // fishschedules: true,
       },
     });
     res.json(data);
   },
-
+  filter: async (req: TypedRequestQuery<FishPondType>, res: Response) => {
+    let results = await db.getRepository(Fishpond).find({
+      where: [
+        { fish_pond_id: Like(`%${req.query.fish_pond_id}%`) },
+        { fish_pond_name: Like(`%${req.query.fish_pond_name}%`) },
+        { note: Like(`%${req.query.note}%`) },
+        { status: Like(`%${req.query.status}%`) },
+        { use_pond_date: Like(`%${req.query.use_pond_date}%`) },
+      ],
+    });
+    res.json(results);
+  },
   add: async (req: TypedRequestBody<FishPondType>, res: Response) => {
     const fishpond = new Fishpond();
     fishpond.user_id = req.body.user_id;

@@ -33,7 +33,7 @@ const authController = {
   },
   register: async (req: Request, res: Response) => {
     try {
-      const objects: { username: string; password: string; displayName: string } = req.body;
+      const objects: { username: string; password: string; displayName: string; role: string } = req.body;
 
       const created = await db.getRepository(Users).findOne({
         where: {
@@ -50,6 +50,7 @@ const authController = {
       user.username = objects.username;
       user.password = bcrypt.hashSync(objects.password, salt);
       user.displayName = objects.displayName;
+      user.role = objects.role;
       user.createdAt = new Date();
       user.updatedAt = new Date();
 
