@@ -74,14 +74,29 @@ export class Products {
   @Column("int", { nullable: true })
   auctionOnly!: number;
 
-  @Column("varchar", { nullable: true })
-  bloodline!: string;
-
   @Column("datetime", { nullable: true })
   createdAt!: Date;
 
   @Column("datetime", { nullable: true })
   updatedAt!: Date;
+
+  @Column("datetime", { nullable: true })
+  birthday!: Date;
+
+  @Column("datetime", { nullable: true })
+  price_buy!: number;
+
+  @Column("float", { nullable: true })
+  weight!: number;
+
+  @Column("float", { nullable: true })
+  length!: number;
+
+  @Column("varchar", { nullable: true })
+  grade!: string;
+
+  @Column("varchar", { nullable: true })
+  bloodline!: string;
 
   @OneToMany(() => Productimages, (productimages) => productimages.products)
   @JoinColumn({ name: "id" })

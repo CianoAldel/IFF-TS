@@ -39,6 +39,12 @@ export class Fishschedules {
   @Column("datetime", { nullable: true })
   repeat_date!: Date;
 
+  @Column("int", { nullable: true })
+  priority!: number;
+
+  @Column("boolean", { nullable: true })
+  notification_status!: Boolean;
+
   @Column("datetime", { nullable: true })
   createdAt!: Date;
 

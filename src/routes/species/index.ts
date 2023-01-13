@@ -6,6 +6,7 @@ import middleware from "../../middlewares/passport-auth";
 const router = Router();
 
 router.get("/", speciesController.index);
+router.get("/filter", speciesController.filter);
 router.get("/:id", speciesController.show);
 router.post(
   "/",

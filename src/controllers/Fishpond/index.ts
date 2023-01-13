@@ -3,7 +3,8 @@ import { Fishpond } from "../../entities/Fishpond";
 import { FishPondType } from "../../interface/FishPond";
 import { TypedRequestBody, TypedRequestQuery } from "../../interface/TypedRequest";
 import db from "../../data-source";
-import { Like } from "typeorm";
+import { Between, IsNull, Like } from "typeorm";
+import moment from "moment";
 
 const fishpondController = {
   show: async (req: Request, res: Response) => {
@@ -18,11 +19,11 @@ const fishpondController = {
   filter: async (req: TypedRequestQuery<FishPondType>, res: Response) => {
     let results = await db.getRepository(Fishpond).find({
       where: [
-        { fish_pond_id: Like(`%${req.query.fish_pond_id}%`) },
-        { fish_pond_name: Like(`%${req.query.fish_pond_name}%`) },
-        { note: Like(`%${req.query.note}%`) },
-        { status: Like(`%${req.query.status}%`) },
-        { use_pond_date: Like(`%${req.query.use_pond_date}%`) },
+        req.query.fish_pond_id.length != 0 ? { fish_pond_id: Like(`%${req.query.fish_pond_id}%`) } : {},
+        req.query.fish_pond_name.length != 0 ? { fish_pond_name: Like(`%${req.query.fish_pond_name}%`) } : {},
+        req.query.note.length != 0 ? { note: Like(`%${req.query.note}%`) } : {},
+        req.query.status.length != 0 ? { status: Like(`%${req.query.status}%`) } : {},
+        { use_pond_date: Between(req.query.current_pond_date, req.query.use_pond_date) },
       ],
     });
     res.json(results);
@@ -34,7 +35,7 @@ const fishpondController = {
     fishpond.fish_pond_name = req.body.fish_pond_name;
     fishpond.status = req.body.status;
     fishpond.note = req.body.note;
-    fishpond.schedules = req.body.schedules;
+    // fishpond.schedules = req.body.schedules;
     fishpond.createdAt = new Date();
     fishpond.updatedAt = new Date();
 

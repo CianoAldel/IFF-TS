@@ -16,17 +16,14 @@ export class Fishpond {
   @Column("int", { nullable: true })
   fish_pond_name!: string;
 
-  @Column("datetime", { nullable: true })
-  schedules!: Date;
-
   @Column("varchar", { nullable: true })
   note!: string;
 
   @Column("varchar", { nullable: true })
   status!: string;
 
-  @Column("varchar", { nullable: true })
-  use_pond_date!: string;
+  @Column("datetime", { nullable: true })
+  use_pond_date!: Date;
 
   @Column("datetime", { nullable: true })
   createdAt!: Date;

@@ -4,6 +4,9 @@ import db from "../../data-source";
 import { Products } from "../../entities/Products";
 import { Productimages } from "../../entities/Productimages";
 import useStorage from "../../libs/useStorage";
+import { TypedRequestQuery } from "../../interface/TypedRequest";
+import { Fishpond } from "../../entities/Fishpond";
+import { Like } from "typeorm";
 
 interface Category {
   type: string;
@@ -91,6 +94,7 @@ const productController = {
 
     res.json(result);
   },
+
   edit: async (req: Request, res: Response) => {
     const { id } = req.params;
 

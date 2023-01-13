@@ -13,6 +13,8 @@ const fishschedulesController = {
   show: async (req: Request, res: Response) => {
     const manage_status: string = req.body.manage_status;
 
+    //รับ query กับ body
+
     if (req.query.manage_status != null && req.query.manage_status != null) {
       const result = await db
         .getRepository(Fishschedules)
@@ -24,9 +26,8 @@ const fishschedulesController = {
           status: req.query.status,
         })
         .orWhere("schedules.manage_status = :manage_status", {
-          manage_status: req.query.manage_status,
+          manage_status: manage_status,
         })
-        .orderBy("schedules.date_schedules", "ASC")
         .getMany();
 
       if (!result) return res.status(400).json({ message: "no status in your request" });
@@ -39,16 +40,36 @@ const fishschedulesController = {
         .leftJoinAndSelect("schedules.products", "products")
         .leftJoinAndSelect("products.fishpond", "fishpond_products")
         .leftJoinAndSelect("schedules.fishpond", "fishpond")
-        .where(!manage_status ? "schedules.manage_status IS NOT NULL" : "schedules.manage_status != :manage_status", {
-          manage_status: manage_status,
-        })
-        .orderBy("schedules.date_schedules", "ASC")
+        .orderBy("schedules.priority", "ASC")
+        .addOrderBy("schedules.date_schedules", "ASC")
         .getMany();
 
       if (!result) return res.status(400).json({ message: "no status in your request" });
 
       res.json(result);
     }
+  },
+
+  showBetweenManage: async (req: Request, res: Response) => {
+    const manage_status: string = req.body.manage_status;
+    const start: Date = req.body.start;
+    const end: Date = req.body.end;
+
+    const result = await db
+      .getRepository(Fishschedules)
+      .createQueryBuilder("schedules")
+      .leftJoinAndSelect("schedules.products", "products")
+      .leftJoinAndSelect("products.fishpond", "fishpond_products")
+      .leftJoinAndSelect("schedules.fishpond", "fishpond")
+      .where(`schedules.date_schedules BETWEEN '${start}' AND '${end}'`)
+      .andWhere("schedules.manage_status = :manage_status", {
+        manage_status: manage_status,
+      })
+      .getMany();
+
+    if (!result) return res.status(400).json({ message: "no data body in your request" });
+
+    res.json(result);
   },
 
   add: async (req: TypedRequestBody<Schedules>, res: Response) => {
@@ -77,9 +98,9 @@ const fishschedulesController = {
     res.status(200).json({ success: true });
   },
 
-  repeatSchedules: async (req: Request, res: Response) => {
+  schedules: async (req: Request, res: Response) => {
     const queryId = Number(req.params.id);
-
+    let priority: number;
     const data: {
       manage_status: string;
     } = req.body;
@@ -89,7 +110,19 @@ const fishschedulesController = {
     const findSchedules = await db.getRepository(Fishschedules).findOneBy({ id: queryId });
 
     if (findSchedules) {
+      switch (data.manage_status) {
+        case "เสร็จสิ้น":
+          priority = 3;
+          break;
+        case "กำลังดำเนินการ":
+          priority = 2;
+          break;
+        case "ยังไม่ได้ดำเนินการ":
+          priority = 1;
+          break;
+      }
       findSchedules.manage_status = data.manage_status;
+      findSchedules.priority = priority!;
       await db.getRepository(Fishschedules).save(findSchedules);
     }
 
@@ -105,49 +138,44 @@ const fishschedulesController = {
       add.event_status = findSchedules!.event_status;
       add.status = findSchedules!.status;
       add.manage_status = "ยังไม่ได้ดำเนินการ";
+      add.priority = 1;
       add.createdAt = new Date();
       add.updatedAt = new Date();
 
       const dataId = await db.getRepository(Fishschedules).save(add);
       const result = await db.getRepository(Fishschedules).findOneBy({ id: dataId.id });
 
-      res.status(200).json({ success: true, data: result });
+      return res.status(200).json({ success: true, data: result });
     }
 
     if (findSchedules!.repeat_date === null && findSchedules?.manage_status == "เสร็จสิ้น") {
       findSchedules.manage_status = data.manage_status;
+      findSchedules.priority = priority!;
       await db.getRepository(Fishschedules).save(findSchedules);
-      res.status(200).json({ success: true, data: "อัพเดทสถานะ กำลังดำเนินการ เสร็จสิ้น" });
+      return res.status(200).json({ success: true, data: "อัพเดทสถานะ กำลังดำเนินการ เสร็จสิ้น" });
     }
 
     if (findSchedules!.repeat_date === null && findSchedules?.manage_status === "กำลังดำเนินการ") {
       findSchedules.manage_status = data.manage_status;
-      await db.getRepository(Fishschedules).save(findSchedules);
-      res.status(200).json({ success: true, data: "อัพเดทสถานะ กำลังดำเนินการ เสร็จสิ้น" });
-    }
+      findSchedules.priority = priority!;
 
-    if (findSchedules!.repeat_date === null && findSchedules?.manage_status === "ปิดการแจ้งเตือน") {
-      findSchedules.manage_status = data.manage_status;
       await db.getRepository(Fishschedules).save(findSchedules);
 
-      res.status(200).json({ success: true, data: "อัพเดทสถานะ ปิดการแจ้งเตือน เสร็จสิ้น" });
+      return res.status(200).json({ success: true, data: "อัพเดทสถานะ กำลังดำเนินการ เสร็จสิ้น" });
     }
 
     res.status(400).json({ success: false, data: "อัพเดทสถานะ ล้มเหลว" });
   },
 
-  delete: async (req: Request, res: Response) => {
-    await db.getRepository(Fishschedules).delete({ id: Number(req.params.id) });
-
-    res.status(200).json({ success: true });
-  },
   edit: async (req: Request, res: Response) => {
-    const result = await db.getRepository(Fishschedules).findOne({
-      where: { id: Number(req.params.id) },
-      relations: {
-        products: true,
-      },
-    });
+    const result = await db
+      .getRepository(Fishschedules)
+      .createQueryBuilder("schedules")
+      .leftJoinAndSelect("schedules.products", "products")
+      .leftJoinAndSelect("products.fishpond", "fishpond_products")
+      .leftJoinAndSelect("schedules.fishpond", "fishpond")
+      .getMany();
+
     res.status(200).json(result);
   },
   update: async (req: TypedRequestBody<Schedules>, res: Response) => {
@@ -162,6 +190,11 @@ const fishschedulesController = {
     dataId.status = req.body.status;
 
     await db.getRepository(Fishschedules).save(dataId);
+  },
+  delete: async (req: Request, res: Response) => {
+    await db.getRepository(Fishschedules).delete({ id: Number(req.params.id) });
+
+    res.status(200).json({ success: true });
   },
 };
 
