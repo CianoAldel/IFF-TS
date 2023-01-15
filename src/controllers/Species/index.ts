@@ -6,7 +6,7 @@ import { Biddings } from "../../entities/Biddings";
 import { Productimages } from "../../entities/Productimages";
 
 import useStorage from "../../libs/useStorage";
-import { Like } from "typeorm";
+import { IsNull, Like } from "typeorm";
 import { TypedRequestQuery } from "../../interface/TypedRequest";
 
 interface MulterRequest extends Request {
@@ -59,8 +59,6 @@ type ImageFile = {
 const speciesController = {
   index: async (req: Request, res: Response) => {
     const { cate, page, pageSize, auctionOnly } = req.query;
-
-    console.log("1");
 
     const size: Partial<Size> = {};
 
@@ -224,7 +222,9 @@ const speciesController = {
         String(req.query.price_buy).length != 0 ? { price_buy: Like(`%${req.query.price_buy}%`) } : {},
         String(req.query.price).length != 0 ? { price: Like(`%${req.query.price}%`) } : {},
         String(req.query.import_date).length != 0 ? { import_date: Like(`%${req.query.import_date}%`) } : {},
-        { fishpond: { fish_pond_name: Like(`%${req.query.fishpond_name}%`) } },
+        String(req.query.fishpond_id).length != 0
+          ? { fishpond: { fish_pond_id: Like(`%${req.query.fishpond_id}%`) } }
+          : { fishpond: { fish_pond_id: IsNull() } },
       ],
     });
     if (results == null) return res.json("ไม่พบข้อมูล ");

@@ -28,20 +28,6 @@ const fishscheduleStockController = {
     if (!result) return res.status(400).json({ message: "no status in your request" });
 
     res.json(result);
-    // const result = await db
-    //   .getRepository(Fishschedulestock)
-    //   .createQueryBuilder("fishschedulestock")
-    //   .leftJoinAndSelect("fishschedulestock.fishschedules", "fishschedules")
-    //   .leftJoinAndSelect("fishschedulestock.products", "products")
-    //   .leftJoinAndSelect("products.fishpond", "fishpond")
-    //   .orderBy("fishschedules.priority", "ASC")
-    //   .addOrderBy("fishschedules.date_schedules", "ASC")
-    //   .getMany();
-
-    // if (!result) return res.status(400).json({ message: "no status in your request" });
-
-    // res.json(result);
-    // }
   },
 };
 
