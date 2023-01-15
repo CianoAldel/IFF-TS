@@ -17,6 +17,7 @@ import { Fishpond } from "./Fishpond";
 import { Fishgrow } from "./Fishgrow";
 import { Fishhealth } from "./Fishhealth";
 import { Fishschedules } from "./Fishschedules";
+import { Fishschedulestock } from "./Fishschedulestock";
 
 @Entity()
 export class Products {
@@ -98,6 +99,9 @@ export class Products {
   @Column("varchar", { nullable: true })
   bloodline!: string;
 
+  @Column("datetime", { nullable: true })
+  import_date!: Date;
+
   @OneToMany(() => Productimages, (productimages) => productimages.products)
   @JoinColumn({ name: "id" })
   productimages!: Productimages[];
@@ -110,9 +114,9 @@ export class Products {
   @JoinColumn({ name: "id" })
   fishhealth!: Fishhealth[];
 
-  @OneToMany(() => Fishschedules, (fishschedules) => fishschedules.products)
+  @OneToMany(() => Fishschedulestock, (fishschedulestock) => fishschedulestock.products)
   @JoinColumn({ name: "id" })
-  fishschedules!: Fishschedules[];
+  fishschedulestock!: Fishschedulestock[];
 
   @ManyToOne(() => Fishpond, (fishpond) => fishpond.products)
   @JoinColumn({ name: "pond_id" })

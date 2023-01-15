@@ -4,7 +4,6 @@ import { FishPondType } from "../../interface/FishPond";
 import { TypedRequestBody, TypedRequestQuery } from "../../interface/TypedRequest";
 import db from "../../data-source";
 import { Between, IsNull, Like } from "typeorm";
-import moment from "moment";
 
 const fishpondController = {
   show: async (req: Request, res: Response) => {
@@ -35,7 +34,6 @@ const fishpondController = {
     fishpond.fish_pond_name = req.body.fish_pond_name;
     fishpond.status = req.body.status;
     fishpond.note = req.body.note;
-    // fishpond.schedules = req.body.schedules;
     fishpond.createdAt = new Date();
     fishpond.updatedAt = new Date();
 

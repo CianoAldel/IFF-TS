@@ -116,9 +116,9 @@ const speciesController = {
       totalBidding: result.raw[0].totalBiddin as number,
     };
 
-    if (!result) return res.status(404).json({ message: "ไม่พบข้อมูล" });
+    if (!data) return res.status(404).json({ message: "ไม่พบข้อมูล" });
 
-    res.json(result);
+    res.json(data);
   },
   edit: async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -209,26 +209,22 @@ const speciesController = {
     res.json(data);
   },
 
-  filter: async (req: TypedRequestQuery<Products>, res: Response) => {
+  filter: async (req: Request, res: Response) => {
     let results = await db.getRepository(Products).find({
       where: [
-        req.query.type.length != 0 ? { type: Like(`%${req.query.type}%`) } : {},
-        req.query.name.length != 0 ? { name: Like(`%${req.query.name}%`) } : {},
-        req.query.detail.length != 0 ? { detail: Like(`%${req.query.detail}%`) } : {},
-        req.query.sku.length != 0 ? { sku: Like(`%${req.query.sku}%`) } : {},
-        req.query.farm.length != 0 ? { farm: Like(`%${req.query.farm}%`) } : {},
-        req.query.size.length != 0 ? { size: Like(`%${req.query.size}%`) } : {},
-        req.query.gender.length != 0 ? { gender: Like(`%${req.query.gender}%`) } : {},
-        req.query.age.length != 0 ? { age: Like(`%${req.query.age}%`) } : {},
-        req.query.sold.length != 0 ? { sold: Like(`%${req.query.sold}%`) } : {},
-        // req.query.youtube.length != 0 ? { youtube: Like(`%${req.query.youtube}%`) } : {},
-        String(req.query.certificate).length != 0 ? { certificate: Like(`%${req.query.certificate}%`) } : {},
-        String(req.query.birthday).length != 0 ? { birthday: Like(`%${req.query.birthday}%`) } : {},
+        req.query.sku!.length != 0 ? { sku: Like(`%${req.query.sku}%`) } : {},
+        req.query.name!.length != 0 ? { name: Like(`%${req.query.name}%`) } : {},
+        req.query.detail!.length != 0 ? { detail: Like(`%${req.query.detail}%`) } : {},
+        req.query.farm!.length != 0 ? { farm: Like(`%${req.query.farm}%`) } : {},
+        req.query.size!.length != 0 ? { size: Like(`%${req.query.size}%`) } : {},
+        req.query.gender!.length != 0 ? { gender: Like(`%${req.query.gender}%`) } : {},
+        req.query.age!.length != 0 ? { age: Like(`%${req.query.age}%`) } : {},
+        req.query.sold!.length != 0 ? { sold: Like(`%${req.query.sold}%`) } : {},
+        req.query.bloodline!.length != 0 ? { bloodline: Like(`%${req.query.bloodline}%`) } : {},
         String(req.query.price_buy).length != 0 ? { price_buy: Like(`%${req.query.price_buy}%`) } : {},
-        String(req.query.weight).length != 0 ? { weight: Like(`%${req.query.weight}%`) } : {},
-        String(req.query.length).length != 0 ? { length: Like(`%${req.query.length}%`) } : {},
-        String(req.query.grade).length != 0 ? { grade: Like(`%${req.query.grade}%`) } : {},
-        String(req.query.bloodline).length != 0 ? { bloodline: Like(`%${req.query.bloodline}%`) } : {},
+        String(req.query.price).length != 0 ? { price: Like(`%${req.query.price}%`) } : {},
+        String(req.query.import_date).length != 0 ? { import_date: Like(`%${req.query.import_date}%`) } : {},
+        { fishpond: { fish_pond_name: Like(`%${req.query.fishpond_name}%`) } },
       ],
     });
     if (results == null) return res.json("ไม่พบข้อมูล ");

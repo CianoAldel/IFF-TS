@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn, ManyToOne } from "typeorm";
 import { Products } from "./Products";
 import { Fishschedules } from "./Fishschedules";
+import { Fishschedulestock } from "./Fishschedulestock";
 
 @Entity("fish_pond")
 export class Fishpond {
@@ -31,11 +32,11 @@ export class Fishpond {
   @Column("datetime", { nullable: true })
   updatedAt!: Date;
 
-  @OneToMany(() => Fishschedules, (fishschedules) => fishschedules.fishpond)
+  @OneToMany(() => Fishschedulestock, (fishschedulestocks) => fishschedulestocks.fishpond)
   @JoinColumn({ name: "id" })
-  fishschedules!: Fishschedules[];
+  fishschedulestock!: Fishschedulestock[];
 
   @OneToMany(() => Products, (products) => products.fishpond)
   @JoinColumn({ name: "id" })
-  products!: Products;
+  products!: Products[];
 }

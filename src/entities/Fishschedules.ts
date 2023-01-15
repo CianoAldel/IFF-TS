@@ -1,6 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn, ManyToOne } from "typeorm";
 import { Fishpond } from "./Fishpond";
 import { Products } from "./Products";
+import { Schedulecount } from "./Schedulecount";
+import { Fishschedulestock } from "./Fishschedulestock";
 
 // enum Type {
 //   "species",
@@ -13,13 +15,7 @@ export class Fishschedules {
   id!: number;
 
   @Column("int", { nullable: true })
-  product_id!: number;
-
-  @Column("int", { nullable: true })
   user_id!: number | null;
-
-  @Column("int", { nullable: true })
-  pond_id!: number;
 
   @Column("int", { nullable: true })
   event_status!: string;
@@ -45,17 +41,20 @@ export class Fishschedules {
   @Column("boolean", { nullable: true })
   notification_status!: Boolean;
 
+  @Column("varchar", { nullable: true })
+  note!: string;
+
   @Column("datetime", { nullable: true })
   createdAt!: Date;
 
   @Column("datetime", { nullable: true })
   updatedAt!: Date;
 
-  @ManyToOne(() => Products, (products) => products.fishschedules)
-  @JoinColumn({ name: "product_id" })
-  products!: Products;
+  @OneToMany(() => Schedulecount, (schedulecount) => schedulecount.fishschedules)
+  @JoinColumn({ name: "id" })
+  schedulecount!: Schedulecount[];
 
-  @ManyToOne(() => Fishpond, (fishpond) => fishpond.fishschedules)
-  @JoinColumn({ name: "pond_id" })
-  fishpond!: Fishpond;
+  @OneToMany(() => Fishschedulestock, (fishschedulestock) => fishschedulestock.fishschedules)
+  @JoinColumn({ name: "id" })
+  fishschedulestock!: Fishschedulestock[];
 }
