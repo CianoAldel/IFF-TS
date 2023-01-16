@@ -152,10 +152,6 @@ const fishschedulesController = {
       where: { schedule_id: queryId },
     });
 
-    // console.log(findScheduleStock);
-
-    // res.json(findScheduleStock);
-
     if (findSchedules) {
       switch (data.manage_status) {
         case "เสร็จสิ้น":
