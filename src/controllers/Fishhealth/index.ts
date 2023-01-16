@@ -37,6 +37,7 @@ const fishhealthontroller = {
     res.status(200).json({ success: true, deleteId: id });
   },
   //Edit
+  edit: async (req: Request, res: Response) => {},
   update: async (req: TypedRequestBody<FishHealthType>, res: Response) => {
     const id = Number(req.body.id);
 
@@ -53,7 +54,10 @@ const fishhealthontroller = {
       data.updatedAt = new Date();
 
       await db.getRepository(Fishhealth).save(data);
+      res.json({ status: "อัพเดทข้อมูลสำเร็จ" });
     }
+
+    res.json({ status: false });
   },
 };
 

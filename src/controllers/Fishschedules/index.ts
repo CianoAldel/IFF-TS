@@ -143,14 +143,14 @@ const fishschedulesController = {
 
     const add = new Fishschedules();
     const schedulecounts = new Schedulecount();
-    const fishSchedulestock = new Fishschedulestock();
-
     const currentDate = new Date();
     const findSchedules = await db.getRepository(Fishschedules).findOneBy({ id: queryId });
 
     const findScheduleStock = await db.getRepository(Fishschedulestock).find({
       where: { schedule_id: queryId },
     });
+
+    //query id = fish_schedule_id
 
     if (findSchedules) {
       switch (data.manage_status) {
@@ -215,7 +215,8 @@ const fishschedulesController = {
         }
       }
 
-      schedulecounts.fish_schedule_id = schedulesId.id;
+      //save schedulecount with query id
+      schedulecounts.fish_schedule_id = queryId;
       await db.getRepository(Schedulecount).save(schedulecounts);
 
       const result = await db.getRepository(Fishschedules).findOneBy({ id: schedulesId.id });
@@ -266,7 +267,8 @@ const fishschedulesController = {
         }
       }
 
-      schedulecounts.fish_schedule_id = schedulesId.id;
+      //save schedulecount with query id
+      schedulecounts.fish_schedule_id = queryId;
       await db.getRepository(Schedulecount).save(schedulecounts);
 
       const result = await db.getRepository(Fishschedules).findOneBy({ id: schedulesId.id });

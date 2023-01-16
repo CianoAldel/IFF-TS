@@ -40,6 +40,7 @@ const fishgrowController = {
     res.status(200).json({ success: true, deleteId: id });
   },
   //Edit
+  edit: async (req: Request, res: Response) => {},
   update: async (req: TypedRequestBody<FishGrowType>, res: Response) => {
     const id = Number(req.body.id);
 
@@ -59,6 +60,8 @@ const fishgrowController = {
       data.updatedAt = new Date();
 
       await db.getRepository(Fishgrow).save(data);
+
+      res.json({ data: data });
     }
   },
 };
