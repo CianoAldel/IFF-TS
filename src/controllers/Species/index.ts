@@ -129,7 +129,23 @@ const speciesController = {
       .createQueryBuilder("products")
       .leftJoinAndSelect("products.productimages", "productimages")
       .leftJoinAndSelect("products.categories", "categories")
-      // .where("products.id = :id", { id: Number(id) })
+      .leftJoinAndSelect("products.fishpond", "fishpond")
+      .select([
+        "products.sku",
+        "products.sold",
+        "productimages.filename",
+        "products.certificate",
+        "categories.name",
+        "products.bloodline",
+        "products.birthday",
+        "products.age",
+        "products.gender",
+        "products.import_date",
+        "products.size",
+        "fishpond.fish_pond_id",
+        "products.price as price_sell",
+        "products.price_buy",
+      ])
       .getMany();
 
     if (!query) return res.status(404).json({ status: false, message: "ไม่พบข้อมูล" });
