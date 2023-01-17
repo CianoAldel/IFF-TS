@@ -2,9 +2,11 @@ import { Router } from "express";
 import fishgrowController from "../../controllers/Fishgrow/index";
 const router = Router();
 
-router.get("/:id", fishgrowController.show);
+router.get("/", fishgrowController.show);
+router.get("/:id", fishgrowController.showById);
 router.post("/add", fishgrowController.add);
-router.post("/fish/update/:id", fishgrowController.update);
-router.post("/fish/delete/:id", fishgrowController.delete);
+router.post("/edit/:id", fishgrowController.edit);
+router.post("/update/:id", fishgrowController.update);
+router.post("/delete/:id", fishgrowController.delete);
 
 export default router;

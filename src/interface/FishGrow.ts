@@ -7,6 +7,4 @@ export type FishGrowType = {
   weight: number;
   note: string;
   status: string;
-  createdAt: string;
-  updatedAt: string;
 };

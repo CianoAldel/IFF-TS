@@ -15,6 +15,14 @@ const fishhealthontroller = {
     res.json(data);
   },
 
+  showById: async (req: Request, res: Response) => {
+    const data = await db.getRepository(Fishhealth).findOneBy({ id: Number(req.params.id) });
+
+    if (!data) return res.json({ status: false, message: "ไม่พบข้อมูล" });
+
+    res.json({ status: true, data: data });
+  },
+
   add: async (req: TypedRequestBody<FishHealthType>, res: Response) => {
     const fishgrow = new Fishhealth();
 
@@ -25,39 +33,56 @@ const fishhealthontroller = {
     fishgrow.createdAt = new Date();
     fishgrow.updatedAt = new Date();
 
-    await db.getRepository(Fishhealth).save(fishgrow);
+    const dataId = await db.getRepository(Fishhealth).save(fishgrow);
 
-    res.status(200).json({ success: "success" });
+    const data = await db.getRepository(Fishhealth).findOneBy({ id: Number(dataId.id) });
+
+    if (!data) return res.json({ status: false, message: "ไม่พบข้อมูล" });
+
+    res.json({ status: true, data: data });
   },
 
   delete: async (req: Request, res: Response) => {
     const id = Number(req.params.id);
     await db.getRepository(Fishhealth).delete({ id: id });
 
-    res.status(200).json({ success: true, deleteId: id });
+    res.json({ status: true, message: `ลบข้อมูลที่ ${req.params?.id} เรียบร้อยแล้ว` });
   },
   //Edit
-  edit: async (req: Request, res: Response) => {},
-  update: async (req: TypedRequestBody<FishHealthType>, res: Response) => {
-    const id = Number(req.body.id);
+  edit: async (req: Request, res: Response) => {
+    const data = await db.getRepository(Fishhealth).findOneBy({
+      id: Number(req.params.id),
+    });
+
+    if (!data) {
+      return res.json({ status: false, message: "ไม่พบข้อมูล" });
+    }
+
+    res.json({ status: true, data: data });
+  },
+  update: async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
 
     const data = await db.getRepository(Fishhealth).findOneBy({
       id: id,
     });
 
-    if (data) {
-      data.product_id = req.body.product_id;
-      data.status = req.body.status;
-      data.user_id = req.body.symptom;
-      data.status_health = req.body.status_health;
-      data.createdAt = new Date();
-      data.updatedAt = new Date();
-
-      await db.getRepository(Fishhealth).save(data);
-      res.json({ status: "อัพเดทข้อมูลสำเร็จ" });
+    if (!data) {
+      return res.json({ status: false, message: "ไม่พบข้อมูล" });
     }
 
-    res.json({ status: false });
+    data.product_id = req.body.product_id;
+    data.status = req.body.status;
+    data.user_id = req.body.symptom;
+    data.status_health = req.body.status_health;
+    data.createdAt = new Date();
+    data.updatedAt = new Date();
+
+    await db.getRepository(Fishhealth).save(data);
+
+    const result = await db.getRepository(Fishhealth).findOneBy({ id: id });
+
+    res.json({ status: true, data: result });
   },
 };
 

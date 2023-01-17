@@ -266,7 +266,6 @@ const speciesController = {
 
     res.json({ status: true, data: result });
   },
-
   filter: async (req: Request, res: Response) => {
     let results = await db.getRepository(Products).find({
       where: [
@@ -376,7 +375,7 @@ const speciesController = {
       .where("id = :id", { id: id })
       .execute();
 
-    res.json({ message: "success", data: result });
+    res.json({ status: true, data: result });
   },
   delete: async (req: Request, res: Response) => {
     await db

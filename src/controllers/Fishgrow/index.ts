@@ -12,7 +12,17 @@ const fishgrowController = {
       },
     });
 
-    res.json(data);
+    if (!data) return res.json({ status: false, message: "ไม่พบข้อมูล" });
+
+    res.json({ status: true, data: data });
+  },
+
+  showById: async (req: Request, res: Response) => {
+    const data = await db.getRepository(Fishgrow).findOneBy({ id: Number(req.params.id) });
+
+    if (!data) return res.json({ status: false, message: "ไม่พบข้อมูล" });
+
+    res.json({ status: true, data: data });
   },
 
   add: async (req: TypedRequestBody<FishGrowType>, res: Response) => {
@@ -28,41 +38,57 @@ const fishgrowController = {
     fishgrow.createdAt = new Date();
     fishgrow.updatedAt = new Date();
 
-    await db.getRepository(Fishgrow).save(fishgrow);
+    const dataId = await db.getRepository(Fishgrow).save(fishgrow);
+    const result = await db.getRepository(Fishgrow).findOneBy({ id: dataId.id });
 
-    res.status(200).json({ success: "success" });
+    if (!result) {
+      return res.json({ status: false, message: "ไม่พบข้อมูล" });
+    }
+
+    res.json({ status: true, data: result });
   },
 
   delete: async (req: Request, res: Response) => {
     const id = Number(req.params.id);
     await db.getRepository(Fishgrow).delete({ id: id });
 
-    res.status(200).json({ success: true, deleteId: id });
+    res.json({ status: true, message: `ลบข้อมูลที่ ${req.params?.id} เรียบร้อยแล้ว` });
   },
   //Edit
-  edit: async (req: Request, res: Response) => {},
-  update: async (req: TypedRequestBody<FishGrowType>, res: Response) => {
-    const id = Number(req.body.id);
+  edit: async (req: Request, res: Response) => {
+    const data = await db.getRepository(Fishgrow).findOneBy({
+      id: Number(req.params.id),
+    });
+
+    if (!data) {
+      return res.json({ status: false, message: "ไม่พบข้อมูล" });
+    }
+
+    res.json({ status: true, data: data });
+  },
+  update: async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
 
     const data = await db.getRepository(Fishgrow).findOneBy({
       id: id,
     });
 
-    if (data) {
-      data.product_id = req.body.product_id;
-      data.width = req.body.width;
-      data.length = req.body.length;
-      data.grade = req.body.grade;
-      data.weight = req.body.weight;
-      data.note = req.body.note;
-      data.status = req.body.status;
-      data.createdAt = new Date();
-      data.updatedAt = new Date();
-
-      await db.getRepository(Fishgrow).save(data);
-
-      res.json({ data: data });
+    if (!data) {
+      return res.json({ status: false, message: "ไม่พบข้อมูล" });
     }
+
+    data.product_id = req.body.product_id;
+    data.width = req.body.width;
+    data.length = req.body.length;
+    data.grade = req.body.grade;
+    data.weight = req.body.weight;
+    data.note = req.body.note;
+    data.status = req.body.status;
+    data.createdAt = new Date();
+    data.updatedAt = new Date();
+
+    await db.getRepository(Fishgrow).save(data);
+    res.json({ status: true, data: data });
   },
 };
 
