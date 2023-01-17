@@ -12,7 +12,7 @@ const fishpondController = {
         products: true,
       },
     });
-    res.json(data);
+    res.json({ status: true, data: data });
   },
   showById: async (req: Request, res: Response) => {
     const data = await db.getRepository(Fishpond).findOne({
@@ -23,7 +23,10 @@ const fishpondController = {
         id: Number(req.params.id),
       },
     });
-    res.json(data);
+
+    if (!data) return res.status(404).json({ status: false, message: `ไม่พบข้อมูล ${req.params.id}` });
+
+    res.json({ status: true, data: data });
   },
   filter: async (req: TypedRequestQuery<FishPondType>, res: Response) => {
     let results = await db.getRepository(Fishpond).find({
@@ -48,8 +51,11 @@ const fishpondController = {
     fishpond.createdAt = new Date();
     fishpond.updatedAt = new Date();
 
-    await db.getRepository(Fishpond).save(fishpond);
-    res.status(200).json({ success: "success" });
+    const dataId = await db.getRepository(Fishpond).save(fishpond);
+
+    const result = db.getRepository(Fishpond).findOneBy({ id: dataId.id });
+
+    res.status(200).json({ status: true, data: result });
   },
 
   delete: async (req: Request, res: Response) => {
@@ -64,27 +70,25 @@ const fishpondController = {
       id: Number(req.params.id),
     });
 
-    res.json({ message: "success", status: 200, data: data });
+    res.json({ status: true, data: data });
   },
-  update: async (req: TypedRequestBody<FishPondType>, res: Response) => {
-    const id = Number(req.body.id);
+  update: async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
 
     const data = await db.getRepository(Fishpond).findOneBy({
       id: id,
     });
+    if (!data) return res.status(404).json({ status: false, message: `ไม่พบข้อมูลที่ ${req.params.id}` });
 
-    if (data) {
-      data.fish_pond_id = req.body.fish_pond_id;
-      data.status = req.body.status;
-      data.note = req.body.note;
-      data.status = req.body.status;
-      data.createdAt = new Date();
-      data.updatedAt = new Date();
+    data.fish_pond_id = req.body.fish_pond_id;
+    data.status = req.body.status;
+    data.note = req.body.note;
+    data.status = req.body.status;
+    data.createdAt = new Date();
+    data.updatedAt = new Date();
 
-      const result = await db.getRepository(Fishpond).save(data);
-      res.json({ message: "success", status: 200, data: result });
-    }
-    res.json({ status: "ไม่สามารถบันทึกข้อมูลนี้ได้ หรือ ไม่มีไอดีของข้อมูลนี้" });
+    const result = await db.getRepository(Fishpond).save(data);
+    res.json({ status: true, data: result });
   },
 };
 

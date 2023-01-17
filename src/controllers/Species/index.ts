@@ -121,8 +121,22 @@ const speciesController = {
 
     res.json(data);
   },
-
   data: async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const query = await db
+      .getRepository(Products)
+      .createQueryBuilder("products")
+      .leftJoinAndSelect("products.productimages", "productimages")
+      .leftJoinAndSelect("products.categories", "categories")
+      // .where("products.id = :id", { id: Number(id) })
+      .getMany();
+
+    if (!query) return res.status(404).json({ status: false, message: "ไม่พบข้อมูล" });
+
+    res.json({ status: true, data: query });
+  },
+  dataId: async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const query = await db
@@ -133,9 +147,9 @@ const speciesController = {
       .where("products.id = :id", { id: Number(id) })
       .getMany();
 
-    if (!query) return res.status(404).json({ message: "ไม่พบข้อมูล" });
+    if (!query) return res.status(404).json({ status: false, message: "ไม่พบข้อมูล" });
 
-    res.json(query);
+    res.json({ status: true, data: query });
   },
   edit: async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -148,9 +162,9 @@ const speciesController = {
       },
     });
 
-    if (!data) return res.status(404).json({ message: "ไม่พบข้อมูล" });
+    if (!data) return res.status(404).json({ status: false, message: "ไม่พบข้อมูล" });
 
-    res.json({ message: "success", data: data });
+    res.json({ status: true, data: data });
   },
   add: async (req: Request, res: Response) => {
     const objects: {
@@ -221,8 +235,6 @@ const speciesController = {
     });
 
     req.files?.["video"]!.map((file, index: number) => {
-      // console.log("file", file);
-
       images.push({
         product_id: data.id,
         filename: file.filename,
@@ -252,7 +264,7 @@ const speciesController = {
       },
     });
 
-    res.json({ message: "success", data: result });
+    res.json({ status: true, data: result });
   },
 
   filter: async (req: Request, res: Response) => {
@@ -374,7 +386,7 @@ const speciesController = {
       .where("id = :id", { id: Number(req.params?.id) })
       .execute();
 
-    res.json({ success: "ลบข้อมูลสำเร็จ" });
+    res.json({ status: true, message: `ลบข้อมูลที่ ${req.params?.id} เรียบร้อยแล้ว` });
   },
   destroy: async (req: Request, res: Response) => {
     const { id } = req.params;

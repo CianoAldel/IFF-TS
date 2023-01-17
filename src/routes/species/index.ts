@@ -10,7 +10,8 @@ router.post(
   speciesController.add
 );
 router.get("/", speciesController.index);
-router.get("/data/:id", speciesController.data);
+router.get("/data", speciesController.data);
+router.get("/data/:id", speciesController.dataId);
 router.get("/edit/:id", speciesController.edit);
 router.post("/update/:id", speciesController.update);
 router.get("/delete/:id", speciesController.delete);
