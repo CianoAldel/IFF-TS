@@ -16,9 +16,27 @@ router.get("/edit/:id", speciesController.edit);
 router.post("/update/:id", speciesController.update);
 router.get("/delete/:id", speciesController.delete);
 router.post(
-  "/update/image/:id",
+  "/update/",
   [upload.fields([{ name: "filenames" }, { name: "video" }, { name: "certificate", maxCount: 1 }])],
-  speciesController.updateImage
+  speciesController.update
+);
+
+router.post(
+  "/update/filename",
+  [upload.fields([{ name: "filenames" }, { name: "video" }, { name: "certificate", maxCount: 1 }])],
+  speciesController.update
+);
+
+router.post(
+  "/update/certificate/:productId",
+  [upload.fields([{ name: "certificate" }])],
+  speciesController.updateCertificate
+);
+router.post("/update/video/:productImageId", [upload.fields([{ name: "video" }])], speciesController.updateVideo);
+router.post(
+  "/update/imageFish/:productImageId",
+  [upload.fields([{ name: "imageFish" }])],
+  speciesController.updateImageFish
 );
 
 router.post(

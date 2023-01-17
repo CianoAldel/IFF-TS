@@ -6,8 +6,6 @@ import fs from "fs";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    console.log("test");
-
     let object: { folder: string } = req.body;
 
     /* if certificate not null create folder with path name */
@@ -18,11 +16,12 @@ const storage = multer.diskStorage({
     let dir = object.folder;
 
     if (!object.folder) {
-      // dir = req.originalUrl.replace("/api/", "");
-      dir = req.originalUrl;
+      if (req.originalUrl.split("/")[4] == "imageFish" || req.originalUrl.split("/")[4] == "video") {
+        dir = "species";
+      }
     }
     /* if certificate = null create folder with route api path name */
-    console.log("req.files", req.files);
+    console.log("dir", dir);
 
     console.log("req.files", file);
 

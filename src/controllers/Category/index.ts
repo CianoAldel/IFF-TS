@@ -22,7 +22,7 @@ const categoryController = {
 
     const data = await db.getRepository(Categories).save(store);
 
-    res.json({ message: "success" });
+    res.json({ status: true });
   },
 };
 

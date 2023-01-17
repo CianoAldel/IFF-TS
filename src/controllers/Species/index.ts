@@ -9,6 +9,7 @@ import useStorage from "../../libs/useStorage";
 import { IsNull, Like } from "typeorm";
 import { TypedRequestBody } from "../../interface/TypedRequest";
 import { SpeciesType } from "../../interface/Species";
+import moment from "moment";
 
 interface MulterRequest extends Request {
   file: any;
@@ -122,8 +123,6 @@ const speciesController = {
     res.json(data);
   },
   data: async (req: Request, res: Response) => {
-    const { id } = req.params;
-
     const query = await db
       .getRepository(Products)
       .createQueryBuilder("products")
@@ -131,8 +130,10 @@ const speciesController = {
       .leftJoinAndSelect("products.categories", "categories")
       .leftJoinAndSelect("products.fishpond", "fishpond")
       .select([
+        "products.id",
         "products.sku",
-        "products.sold",
+        "products.status",
+        "productimages.id",
         "productimages.filename",
         "products.certificate",
         "categories.name",
@@ -143,7 +144,7 @@ const speciesController = {
         "products.import_date",
         "products.size",
         "fishpond.fish_pond_id",
-        "products.price as price_sell",
+        "products.price",
         "products.price_buy",
       ])
       .getMany();
@@ -160,8 +161,28 @@ const speciesController = {
       .createQueryBuilder("products")
       .leftJoinAndSelect("products.productimages", "productimages")
       .leftJoinAndSelect("products.categories", "categories")
+      .leftJoinAndSelect("products.fishpond", "fishpond")
+      .select([
+        "products.id",
+        "products.sku",
+        "products.status",
+        "productimages.id",
+        "productimages.filename",
+        "products.certificate",
+        "categories.name",
+        "products.bloodline",
+        "products.birthday",
+        "products.age",
+        "products.gender",
+        "products.import_date",
+        "products.size",
+        "fishpond.fish_pond_id",
+        "products.price",
+        "products.price_buy",
+      ])
       .where("products.id = :id", { id: Number(id) })
-      .getMany();
+
+      .getOne();
 
     if (!query) return res.status(404).json({ status: false, message: "ไม่พบข้อมูล" });
 
@@ -170,17 +191,36 @@ const speciesController = {
   edit: async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    const data = await db.getRepository(Products).findOne({
-      where: { id: Number(id) },
-      relations: {
-        productimages: true,
-        categories: true,
-      },
-    });
+    const query = await db
+      .getRepository(Products)
+      .createQueryBuilder("products")
+      .leftJoinAndSelect("products.productimages", "productimages")
+      .leftJoinAndSelect("products.categories", "categories")
+      .leftJoinAndSelect("products.fishpond", "fishpond")
+      .select([
+        "products.id",
+        "products.sku",
+        "products.status",
+        "productimages.id",
+        "productimages.filename",
+        "products.certificate",
+        "categories.name",
+        "products.bloodline",
+        "products.birthday",
+        "products.age",
+        "products.gender",
+        "products.import_date",
+        "products.size",
+        "fishpond.fish_pond_id",
+        "products.price",
+        "products.price_buy",
+      ])
+      .where("products.id = :id", { id: Number(id) })
+      .getOne();
 
-    if (!data) return res.status(404).json({ status: false, message: "ไม่พบข้อมูล" });
+    if (!query) return res.status(404).json({ status: false, message: "ไม่พบข้อมูล" });
 
-    res.json({ status: true, data: data });
+    res.json({ status: true, data: query });
   },
   add: async (req: Request, res: Response) => {
     const objects: {
@@ -192,10 +232,7 @@ const speciesController = {
       size: string; //ไซต์
       gender: string; //เพศ
       age: string; // อายุ
-      sold: string; // ขาย
-      rate: number; //การประเมินค่า
-      // youtube: string; //ลิ้งยูทูป
-      auctionOnly: number; //ประมูลเท่านั้น
+      status: string; // ขาย
       filename: string; //อัพโหลดรูปปลา
       video: string; //อัพโหลดรูปปลา
       certificate: string; //อัพโหลดรูปปลา
@@ -214,8 +251,9 @@ const speciesController = {
       certificate = req.files!.certificate[0].filename;
     }
 
+    const currentDate = new Date();
+
     const store = new Products();
-    store.type = "species";
     store.name = objects.title;
     store.cate_id = objects.cate_id;
     store.detail = objects.note;
@@ -224,10 +262,8 @@ const speciesController = {
     store.size = objects.size;
     store.gender = objects.gender;
     store.age = objects.age;
-    store.rate = objects.rate;
-    store.sold = objects.sold;
+    store.status = objects.status;
     store.certificate = certificate!;
-    store.auctionOnly = objects.auctionOnly;
     store.createdAt = new Date();
     store.updatedAt = new Date();
     store.birthday = objects.birthday;
@@ -292,7 +328,7 @@ const speciesController = {
         req.query.size!.length != 0 ? { size: Like(`%${req.query.size}%`) } : {},
         req.query.gender!.length != 0 ? { gender: Like(`%${req.query.gender}%`) } : {},
         req.query.age!.length != 0 ? { age: Like(`%${req.query.age}%`) } : {},
-        req.query.sold!.length != 0 ? { sold: Like(`%${req.query.sold}%`) } : {},
+        req.query.status!.length != 0 ? { status: Like(`%${req.query.status}%`) } : {},
         req.query.bloodline!.length != 0 ? { bloodline: Like(`%${req.query.bloodline}%`) } : {},
         String(req.query.price_buy).length != 0 ? { price_buy: Like(`%${req.query.price_buy}%`) } : {},
         String(req.query.price).length != 0 ? { price: Like(`%${req.query.price}%`) } : {},
@@ -305,42 +341,51 @@ const speciesController = {
     // if (!results == null) return res.json("ไม่พบข้อมูล ");
     res.json(results);
   },
-  updateImage: async (req: Request, res: Response) => {
-    const images: Array<ImageFile> = [];
+  update: async (req: Request, res: Response) => {
+    const objects: {
+      name: string;
+      cate_id: number; //สายพันธ์ปลา
+      note: string;
+      sku: string; //รหัสปลา
+      farm: string; //ฟาร์ม
+      size: string; //ไซต์
+      gender: string; //เพศ
+      age: string; // อายุ
+      status: string; // status
+      weight: number; //น้ำหนัก
+      length: number; //ความกว้าง
+      price_sell: number; //ราคาขาย
+      price_buy: number; //ราคาซื้อ
+      import_date: Date; //วันที่นำเข้า
+      bloodline: string;
+      birthday: Date; //วันเกิดปลา
+    } = req.body;
 
-    const data = await db.getRepository(Productimages).findOneBy({ id: Number(req.params.id) });
+    const data = await db.getRepository(Products).findOneBy({ id: Number(req.params.id) });
 
-    // return res.json(data);
     if (!data) {
       return res.json({ message: "ไม่พบข้อมูล" });
     }
 
-    req.files?.["imageFish"]!.map((file, index: number) => {
-      images.push({
-        product_id: Number(data.id),
-        filename: file.filename,
-        type: "image",
-      });
-    });
+    data.name = objects.name;
+    data.cate_id = objects.cate_id;
+    data.price = objects.price_sell;
+    data.detail = objects.note;
+    data.sku = objects.sku;
+    data.farm = objects.farm;
+    data.size = objects.size;
+    data.gender = objects.gender;
+    data.age = objects.age;
+    data.status = objects.status;
+    data.updatedAt = new Date();
+    data.birthday = objects.birthday;
+    data.price_buy = objects.price_buy;
+    data.weight = objects.weight;
+    data.length = objects.length;
+    data.bloodline = objects.bloodline;
+    data.import_date = objects.import_date;
 
-    req.files?.["video"]!.map((file, index: number) => {
-      images.push({
-        product_id: Number(data.id),
-        filename: file.filename,
-        type: "video",
-      });
-    });
-
-    for (let i = 0; i < images.length; i++) {
-      if (images.length > 0) {
-        data.product_id = images[i].product_id;
-        data.filename = images[i].filename;
-        data.type = images[i].type!;
-        data.createdAt = new Date();
-        data.updatedAt = new Date();
-        await db.getRepository(Productimages).save(data);
-      }
-    }
+    await db.getRepository(Products).save(data);
 
     const result = await db.getRepository(Products).find({
       where: {
@@ -348,50 +393,49 @@ const speciesController = {
       },
     });
 
-    return res.json(result);
-  },
-  update: async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const data = await db.getRepository(Products).findOne({
-      where: { id: Number(id) },
-    });
-    if (!data) return res.status(404).json({ message: "ไม่พบข้อมูล" });
-
-    // return res.json(data);
-    const result = await db
-      .createQueryBuilder()
-      .update(Products)
-      .set({
-        cate_id: data.cate_id,
-        pond_id: data.pond_id,
-        type: data.type,
-        name: data.name,
-        price: data.price,
-        detail: data.detail,
-        sku: data.sku,
-        farm: data.farm,
-        size: data.size,
-        gender: data.gender,
-        age: data.age,
-        sold: data.sold,
-        rate: data.rate,
-        certificate: data.certificate,
-        user_id: data.user_id,
-        auctionOnly: data.auctionOnly,
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
-        birthday: data.birthday,
-        price_buy: data.price_buy,
-        weight: data.weight,
-        length: data.length,
-        grade: data.grade,
-        bloodline: data.bloodline,
-        import_date: data.import_date,
-      })
-      .where("id = :id", { id: id })
-      .execute();
-
     res.json({ status: true, data: result });
+  },
+  updateCertificate: async (req: Request, res: Response) => {
+    const { productId } = req.params; // productId
+    const data = await db.getRepository(Products).findOne({ where: { id: Number(productId) } });
+
+    if (!data) {
+      return res.json({ status: true, message: "ไม่พบข้อมูล" });
+    }
+
+    if (req.files!.certificate) {
+      data.certificate = req.files!.certificate[0].filename;
+      await db.getRepository(Products).save(data);
+      res.json({ status: true, data: data });
+    }
+  },
+  updateVideo: async (req: Request, res: Response) => {
+    const { productImageId } = req.params;
+
+    const data = await db.getRepository(Productimages).findOne({ where: { id: Number(productImageId) } });
+    if (!data) {
+      return res.json({ status: true, message: "ไม่พบข้อมูล" });
+    }
+
+    if (req.files!.video) {
+      data.filename = req.files!.video[0].filename;
+      await db.getRepository(Productimages).save(data!);
+      res.json({ status: true, data: data });
+    }
+  },
+  updateImageFish: async (req: Request, res: Response) => {
+    const { productImageId } = req.params;
+
+    const data = await db.getRepository(Productimages).findOne({ where: { id: Number(productImageId) } });
+    if (!data) {
+      return res.json({ status: true, message: "ไม่พบข้อมูล" });
+    }
+
+    if (req.files!.imageFish) {
+      data.filename = req.files!.imageFish[0].filename;
+      await db.getRepository(Productimages).save(data!);
+      res.json({ status: true, data: data });
+    }
   },
   delete: async (req: Request, res: Response) => {
     await db

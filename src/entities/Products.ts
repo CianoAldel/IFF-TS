@@ -57,7 +57,7 @@ export class Products {
   age!: string;
 
   @Column({ type: "text", enum: ["normal", "sold", "sick", "die"], nullable: true })
-  sold!: string;
+  status!: string;
 
   @Column("double", { nullable: true })
   rate!: number;
