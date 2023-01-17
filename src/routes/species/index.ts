@@ -4,14 +4,30 @@ import upload from "../../middlewares/Multer";
 import middleware from "../../middlewares/passport-auth";
 
 const router = Router();
-
-router.get("/", speciesController.index);
-router.get("/filter", speciesController.filter);
-router.get("/:id", speciesController.show);
 router.post(
   "/",
-  [upload.fields([{ name: "certificate", maxCount: 1 }, { name: "filenames" }])],
-  speciesController.store
+  [upload.fields([{ name: "filenames" }, { name: "video" }, { name: "certificate", maxCount: 1 }])],
+  speciesController.add
 );
+router.get("/", speciesController.index);
+router.get("/data/:id", speciesController.data);
+router.get("/edit/:id", speciesController.edit);
+router.post("/update/:id", speciesController.update);
+router.get("/delete/:id", speciesController.delete);
+router.post(
+  "/update/image/:id",
+  [upload.fields([{ name: "filenames" }, { name: "video" }, { name: "certificate", maxCount: 1 }])],
+  speciesController.updateImage
+);
+
+router.post(
+  "/",
+  [upload.fields([{ name: "filenames" }, { name: "video" }, { name: "certificate", maxCount: 1 }])],
+  speciesController.add
+);
+
+router.get("/filter", speciesController.filter);
+
+router.get("/:id", speciesController.show);
 
 export default router;

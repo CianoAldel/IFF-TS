@@ -295,6 +295,167 @@ const fishschedulesController = {
     res.status(400).json({ success: false, data: "อัพเดทสถานะ ล้มเหลว" });
   },
 
+  schedules1: async (req: Request, res: Response) => {
+    const queryId = Number(req.params.id);
+    let priority: number;
+    const data: {
+      manage_status: string;
+    } = req.body;
+
+    const add = new Fishschedules();
+    const schedulecounts = new Schedulecount();
+    const currentDate = new Date();
+    const findSchedules = await db.getRepository(Fishschedules).findOneBy({ id: queryId });
+
+    const findScheduleStock = await db.getRepository(Fishschedulestock).find({
+      where: { schedule_id: queryId },
+    });
+
+    //query id = fish_schedule_id
+
+    if (findSchedules) {
+      switch (data.manage_status) {
+        case "เสร็จสิ้น":
+          priority = 3;
+          break;
+        case "กำลังดำเนินการ":
+          priority = 2;
+          break;
+        case "ยังไม่ได้ดำเนินการ":
+          priority = 1;
+          break;
+      }
+      findSchedules!.manage_status = data.manage_status;
+      findSchedules!.priority = priority!;
+      await db.getRepository(Fishschedules).save(findSchedules);
+    }
+
+    if (
+      findSchedules!.repeat_date! >= currentDate &&
+      findSchedules!.repeat_date !== null &&
+      findSchedules!.manage_status == "เสร็จสิ้น"
+    ) {
+      //convert repeat_date to date and find day
+      const date = new Date(findSchedules!.repeat_date).getDate() - new Date(findSchedules!.date_schedules).getDate();
+      const repeat_date = moment(findSchedules?.repeat_date).add(date, "day").toDate();
+
+      add.date_start = moment().toDate();
+      add.date_schedules = findSchedules!.repeat_date;
+      add.repeat_date = repeat_date;
+      add.event_status = findSchedules!.event_status;
+      add.status = findSchedules!.status;
+      add.manage_status = "ยังไม่ได้ดำเนินการ";
+      add.priority = 1;
+      add.createdAt = new Date();
+      add.updatedAt = new Date();
+
+      const schedulesId = await db.getRepository(Fishschedules).save(add);
+
+      // loop save array pondId and productId
+      for (let index = 0; index < findScheduleStock.length; index++) {
+        const element = findScheduleStock[index].product_id;
+        if (element != null) {
+          await db
+            .createQueryBuilder()
+            .insert()
+            .into(Fishschedulestock)
+            .values([{ schedule_id: schedulesId.id, product_id: element }])
+            .execute();
+        }
+      }
+
+      for (let j = 0; j < findScheduleStock.length; j++) {
+        const element = findScheduleStock[j].pond_id;
+        if (element != null) {
+          await db
+            .createQueryBuilder()
+            .insert()
+            .into(Fishschedulestock)
+            .values([{ schedule_id: schedulesId.id, pond_id: element }])
+            .execute();
+        }
+      }
+
+      //save schedulecount with query id
+      schedulecounts.fish_schedule_id = queryId;
+      await db.getRepository(Schedulecount).save(schedulecounts);
+
+      const result = await db.getRepository(Fishschedules).findOneBy({ id: schedulesId.id });
+
+      return res.status(200).json({ success: true, data: result });
+    } else if (
+      findSchedules!.repeat_date! <= currentDate &&
+      findSchedules!.repeat_date !== null &&
+      findSchedules!.manage_status == "เสร็จสิ้น"
+    ) {
+      const date = new Date(findSchedules!.repeat_date).getDate() - new Date(findSchedules!.date_schedules).getDate();
+      const repeat_date = moment().add(date, "day").toDate();
+
+      add.date_start = moment().toDate();
+      add.date_schedules = currentDate;
+      add.repeat_date = repeat_date;
+      add.event_status = findSchedules!.event_status;
+      add.status = findSchedules!.status;
+      add.manage_status = "ยังไม่ได้ดำเนินการ";
+      add.priority = 1;
+      add.createdAt = new Date();
+      add.updatedAt = new Date();
+
+      const schedulesId = await db.getRepository(Fishschedules).save(add);
+
+      for (let index = 0; index < findScheduleStock.length; index++) {
+        const element = findScheduleStock[index].product_id;
+        if (element != null) {
+          await db
+            .createQueryBuilder()
+            .insert()
+            .into(Fishschedulestock)
+            .values([{ schedule_id: schedulesId.id, product_id: element }])
+            .execute();
+        }
+      }
+
+      for (let j = 0; j < findScheduleStock.length; j++) {
+        const element = findScheduleStock[j].pond_id;
+
+        if (element != null) {
+          await db
+            .createQueryBuilder()
+            .insert()
+            .into(Fishschedulestock)
+            .values([{ schedule_id: schedulesId.id, pond_id: element }])
+            .execute();
+        }
+      }
+
+      //save schedulecount with query id
+      schedulecounts.fish_schedule_id = queryId;
+      await db.getRepository(Schedulecount).save(schedulecounts);
+
+      const result = await db.getRepository(Fishschedules).findOneBy({ id: schedulesId.id });
+      return res.status(200).json({ success: true, data: result });
+    }
+
+    if (findSchedules!.repeat_date === null && findSchedules?.manage_status === "เสร็จสิ้น") {
+      findSchedules.manage_status = data.manage_status;
+      findSchedules.priority = priority!;
+      await db.getRepository(Fishschedules).save(findSchedules);
+      return res.status(200).json({ success: true, data: "อัพเดทสถานะ กำลังดำเนินการ เสร็จสิ้น" });
+    }
+
+    if (
+      findSchedules!.repeat_date === null ||
+      (findSchedules!.repeat_date !== null && findSchedules?.manage_status === "กำลังดำเนินการ")
+    ) {
+      findSchedules!.manage_status = data.manage_status;
+      findSchedules!.priority = priority!;
+      await db.getRepository(Fishschedules).save(findSchedules!);
+
+      return res.status(200).json({ success: true, data: "อัพเดทสถานะ กำลังดำเนินการ เสร็จสิ้น" });
+    }
+    res.status(400).json({ success: false, data: "อัพเดทสถานะ ล้มเหลว" });
+  },
+
   edit: async (req: Request, res: Response) => {
     const result = await db
       .getRepository(Fishschedulestock)

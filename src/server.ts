@@ -34,6 +34,7 @@ app.use(
   })
 );
 
+app.use(express.static("public"));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cookieParser());

@@ -3,6 +3,7 @@ import fishPondController from "../../controllers/Fishpond/index";
 const router = Router();
 
 router.get("/", fishPondController.show);
+router.get("/:id", fishPondController.showById);
 router.get("/filter", fishPondController.filter);
 router.post("/add", fishPondController.add);
 router.get("/edit/:id", fishPondController.edit);

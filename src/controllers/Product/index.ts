@@ -123,7 +123,7 @@ const productController = {
 
     const images: Array<ImageFile> = [];
 
-    req.files?.["filename"]!.map((file) => {
+    req.files?.["filenames"]!.map((file) => {
       images.push({
         product_id: data.id,
         filename: file.filename,

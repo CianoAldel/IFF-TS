@@ -16,7 +16,6 @@ import { Auctions } from "./Auctions";
 import { Fishpond } from "./Fishpond";
 import { Fishgrow } from "./Fishgrow";
 import { Fishhealth } from "./Fishhealth";
-import { Fishschedules } from "./Fishschedules";
 import { Fishschedulestock } from "./Fishschedulestock";
 
 @Entity()
@@ -57,7 +56,7 @@ export class Products {
   @Column("varchar", { nullable: true })
   age!: string;
 
-  @Column({ type: "text", enum: ["true", "false"], nullable: true })
+  @Column({ type: "text", enum: ["normal", "sold", "sick", "die"], nullable: true })
   sold!: string;
 
   @Column("double", { nullable: true })
@@ -84,7 +83,7 @@ export class Products {
   @Column("datetime", { nullable: true })
   birthday!: Date;
 
-  @Column("datetime", { nullable: true })
+  @Column("float", { nullable: true })
   price_buy!: number;
 
   @Column("float", { nullable: true })

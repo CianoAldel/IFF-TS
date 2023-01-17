@@ -10,7 +10,17 @@ const fishpondController = {
     const data = await db.getRepository(Fishpond).find({
       relations: {
         products: true,
-        // fishschedules: true,
+      },
+    });
+    res.json(data);
+  },
+  showById: async (req: Request, res: Response) => {
+    const data = await db.getRepository(Fishpond).findOne({
+      relations: {
+        products: true,
+      },
+      where: {
+        id: Number(req.params.id),
       },
     });
     res.json(data);
@@ -31,7 +41,8 @@ const fishpondController = {
     const fishpond = new Fishpond();
     fishpond.user_id = req.body.user_id;
     fishpond.fish_pond_id = req.body.fish_pond_id;
-    fishpond.fish_pond_name = req.body.fish_pond_name;
+    // fishpond.fish_pond_name = req.body.fish_pond_name;
+    fishpond.use_pond_date = req.body.use_pond_date;
     fishpond.status = req.body.status;
     fishpond.note = req.body.note;
     fishpond.createdAt = new Date();
@@ -48,7 +59,13 @@ const fishpondController = {
     res.status(200).json({ success: true, deleteId: id });
   },
   //Edit
-  edit: async (req: TypedRequestBody<FishPondType>, res: Response) => {},
+  edit: async (req: Request, res: Response) => {
+    const data = await db.getRepository(Fishpond).findOneBy({
+      id: Number(req.params.id),
+    });
+
+    res.json({ message: "success", status: 200, data: data });
+  },
   update: async (req: TypedRequestBody<FishPondType>, res: Response) => {
     const id = Number(req.body.id);
 
@@ -58,15 +75,16 @@ const fishpondController = {
 
     if (data) {
       data.fish_pond_id = req.body.fish_pond_id;
-      data.fish_pond_name = req.body.fish_pond_name;
       data.status = req.body.status;
       data.note = req.body.note;
       data.status = req.body.status;
       data.createdAt = new Date();
       data.updatedAt = new Date();
 
-      await db.getRepository(Fishpond).save(data);
+      const result = await db.getRepository(Fishpond).save(data);
+      res.json({ message: "success", status: 200, data: result });
     }
+    res.json({ status: "ไม่สามารถบันทึกข้อมูลนี้ได้ หรือ ไม่มีไอดีของข้อมูลนี้" });
   },
 };
 
