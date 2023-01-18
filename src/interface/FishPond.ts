@@ -5,7 +5,8 @@ export type FishPondType = {
   note: string;
   status: string;
   use_pond_date: Date;
-  current_pond_date: Date;
+  start_date: Date;
+  end_date: Date;
   createdAt: string;
   updatedAt: string;
 };

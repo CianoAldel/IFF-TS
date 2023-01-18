@@ -6,7 +6,7 @@ import middleware from "../../middlewares/passport-auth";
 const router = Router();
 router.post(
   "/",
-  [upload.fields([{ name: "filenames" }, { name: "video" }, { name: "certificate", maxCount: 1 }])],
+  [upload.fields([{ name: "imageFish" }, { name: "video" }, { name: "certificate", maxCount: 1 }])],
   speciesController.add
 );
 router.get("/", speciesController.index);

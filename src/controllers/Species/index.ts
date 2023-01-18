@@ -134,6 +134,7 @@ const speciesController = {
         "products.sku",
         "products.status",
         "productimages.id",
+        "productimages.type",
         "productimages.filename",
         "products.certificate",
         "categories.name",
@@ -167,6 +168,7 @@ const speciesController = {
         "products.sku",
         "products.status",
         "productimages.id",
+        "productimages.type",
         "productimages.filename",
         "products.certificate",
         "categories.name",
@@ -278,7 +280,7 @@ const speciesController = {
 
     const images: Array<ImageFile> = [];
 
-    req.files?.["filenames"]!.map((file, index: number) => {
+    req.files?.["imageFish"]!.map((file, index: number) => {
       images.push({
         product_id: data.id,
         filename: file.filename,
@@ -331,7 +333,7 @@ const speciesController = {
         req.query.status!.length != 0 ? { status: Like(`%${req.query.status}%`) } : {},
         req.query.bloodline!.length != 0 ? { bloodline: Like(`%${req.query.bloodline}%`) } : {},
         String(req.query.price_buy).length != 0 ? { price_buy: Like(`%${req.query.price_buy}%`) } : {},
-        String(req.query.price).length != 0 ? { price: Like(`%${req.query.price}%`) } : {},
+        String(req.query.price_sell).length != 0 ? { price: Like(`%${req.query.price_sell}%`) } : {},
         String(req.query.import_date).length != 0 ? { import_date: Like(`%${req.query.import_date}%`) } : {},
         String(req.query.fishpond_id).length != 0
           ? { fishpond: { fish_pond_id: Like(`%${req.query.fishpond_id}%`) } }

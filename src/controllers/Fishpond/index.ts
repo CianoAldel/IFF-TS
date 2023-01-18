@@ -35,7 +35,7 @@ const fishpondController = {
         req.query.fish_pond_name.length != 0 ? { fish_pond_name: Like(`%${req.query.fish_pond_name}%`) } : {},
         req.query.note.length != 0 ? { note: Like(`%${req.query.note}%`) } : {},
         req.query.status.length != 0 ? { status: Like(`%${req.query.status}%`) } : {},
-        { use_pond_date: Between(req.query.current_pond_date, req.query.use_pond_date) },
+        { use_pond_date: Between(req.query.start_date, req.query.end_date) },
       ],
     });
     res.json(results);

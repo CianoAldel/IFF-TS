@@ -19,6 +19,7 @@ const storage = multer.diskStorage({
       if (req.originalUrl.split("/")[4] == "imageFish" || req.originalUrl.split("/")[4] == "video") {
         dir = "species";
       }
+      dir = req.originalUrl.replace("/api/", "");
     }
     /* if certificate = null create folder with route api path name */
     console.log("dir", dir);
