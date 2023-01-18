@@ -4,6 +4,7 @@ import { FishPondType } from "../../interface/FishPond";
 import { TypedRequestBody, TypedRequestQuery } from "../../interface/TypedRequest";
 import db from "../../data-source";
 import { Between, IsNull, Like } from "typeorm";
+import moment from "moment";
 
 const fishpondController = {
   show: async (req: Request, res: Response) => {
@@ -71,14 +72,12 @@ const fishpondController = {
     fishpond.use_pond_date = new Date(req.body.use_pond_date);
     fishpond.status = req.body.status;
     fishpond.note = req.body.note;
-    fishpond.createdAt = new Date();
-    fishpond.updatedAt = new Date();
+    fishpond.createdAt = moment().add(7, "hour").toDate();
+    fishpond.updatedAt = moment().add(7, "hour").toDate();
 
     const dataId = await db.getRepository(Fishpond).save(fishpond);
 
-    const result = db.getRepository(Fishpond).findOneBy({ id: dataId.id });
-
-    res.status(200).json({ status: true, data: result });
+    res.status(200).json({ status: true, message: `เพิ่มข้อมุลสำเร็จ ไอดีที่ ${dataId.id}` });
   },
 
   delete: async (req: Request, res: Response) => {
