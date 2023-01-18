@@ -267,9 +267,9 @@ const speciesController = {
       length: number; //ความกว้าง
       price_sell: number; //ราคาขาย
       price_buy: number; //ราคาซื้อ
-      import_date: Date; //วันที่นำเข้า
+      import_date: string; //วันที่นำเข้า
       bloodline: string;
-      birthday: Date; //วันเกิดปลา
+      birthday: string; //วันเกิดปลา
     } = req.body;
 
     let certificate: string | null;
@@ -292,20 +292,20 @@ const speciesController = {
     store.age = objects.age;
     store.status = objects.status;
     store.certificate = certificate!;
-    store.createdAt = new Date();
-    store.updatedAt = new Date();
-    store.birthday = objects.birthday;
+    store.createdAt = moment().add(7, "hour").toDate();
+    store.updatedAt = moment().add(7, "hour").toDate();
+    store.birthday = new Date(objects.birthday);
     store.weight = objects.weight;
     store.length = objects.length;
     store.price = objects.price_sell;
     store.price_buy = objects.price_buy;
-    store.import_date = objects.import_date;
+    store.import_date = new Date(objects.import_date);
     store.bloodline = objects.bloodline;
 
     const data = await db.getRepository(Products).save(store);
 
     const images: Array<ImageFile> = [];
-    const vedio: Array<ImageFile> = [];
+    const video: Array<ImageFile> = [];
 
     console.log("test", req.files);
 
@@ -334,18 +334,18 @@ const speciesController = {
 
     if (req.files?.["video"] != null) {
       req.files?.["video"]!.map((file, index: number) => {
-        vedio.push({
+        video.push({
           product_id: data.id,
           filename: file.filename,
           type: "video",
         });
       });
-      for (let i = 0; i < images.length; i++) {
-        if (vedio.length > 0) {
+      for (let i = 0; i < video.length; i++) {
+        if (video.length > 0) {
           const storeImages = new Productimages();
-          storeImages.product_id = vedio[i].product_id;
-          storeImages.filename = vedio[i].filename;
-          storeImages.type = vedio[i].type!;
+          storeImages.product_id = video[i].product_id;
+          storeImages.filename = video[i].filename;
+          storeImages.type = video[i].type!;
           storeImages.createdAt = new Date();
           storeImages.updatedAt = new Date();
 
@@ -474,20 +474,42 @@ const speciesController = {
     }
   },
   updateOrInsertVideo: async (req: Request, res: Response) => {
-    // const { productImageId } = req.params;
-    const { productId } = req.params;
-    const product = await db.getRepository(Products).findOne({ where: { id: Number(productId) } });
-    return res.json(product);
-    // const data = await db.getRepository(Productimages).findOne({ where: { id: Number(productImageId) } });
-    // if (!data) {
+    // console.log(req.body);
+    const { productId } = req.body;
+    const { productImageId } = req.body;
+    // const product = await db
+    //   .getRepository(Products)
+    //   .findOne({ relations: { productimages: true }, where: { id: Number(productId) } });
+    // if (!product) {
     //   return res.json({ status: true, message: "ไม่พบข้อมูล" });
     // }
 
-    // if (req.files!.video) {
-    //   data.filename = req.files!.video[0].filename;
-    //   await db.getRepository(Productimages).save(data!);
-    //   res.json({ status: true, data: data });
-    // }
+    if (productImageId) {
+      const productImage = await db
+        .getRepository(Productimages)
+        .findOne({ where: { id: Number(productImageId), type: "video" } });
+
+      if (productImage && productImage.type == "video") {
+        productImage.filename = req.files?.["video"]![0].filename!;
+        await db.getRepository(Productimages).save(productImage!);
+        res.json({ status: true, data: productImage });
+      } else {
+        res.json({ status: false, message: "productImageId ที่ส่งมาไม่ใช่ type video" });
+      }
+    }
+
+    if (productId && req.files?.["video"] != null) {
+      const storeImages = new Productimages();
+      storeImages.product_id = productId;
+      storeImages.filename = req.files?.["video"]![0].filename!;
+      storeImages.type = "video";
+      storeImages.createdAt = new Date();
+      storeImages.updatedAt = new Date();
+      await db.getRepository(Productimages).save(storeImages);
+      res.json({ status: true, message: "เพิ่มรูปภาพสำเร็จแล้ว" });
+    }
+
+    res.json({ status: false, message: "ไม่สามาถอัพโหลดรูปภาพได้" });
   },
   updateOrInsertImageFish: async (req: Request, res: Response) => {
     const { productImageId } = req.params;
