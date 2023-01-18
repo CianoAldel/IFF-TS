@@ -39,7 +39,7 @@ export class Products {
   price!: number;
 
   @Column("text", { nullable: true })
-  detail!: string;
+  note!: string;
 
   @Column("varchar", { nullable: true })
   sku!: string;

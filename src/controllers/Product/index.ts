@@ -56,7 +56,7 @@ const productController = {
         cate_id: true,
         type: true,
         name: true,
-        detail: true,
+        note: true,
         price: true,
         createdAt: true,
         updatedAt: true,
@@ -80,7 +80,7 @@ const productController = {
         type: true,
         name: true,
         price: true,
-        detail: true,
+        note: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -116,7 +116,7 @@ const productController = {
     const create = new Products();
     create.name = object.title;
     create.cate_id = object.cate_id;
-    create.detail = object.content;
+    create.note = object.content;
     create.price = object.price;
 
     const data = await db.getRepository(Products).save(create);
@@ -153,7 +153,7 @@ const productController = {
     if (!data) return res.status(404).json({ message: "ไม่พบข้อมูล" });
 
     data.name = title;
-    data.detail = content;
+    data.note = content;
     data.cate_id = cate_id;
     data.price = price;
 

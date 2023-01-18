@@ -131,10 +131,11 @@ const speciesController = {
       .leftJoinAndSelect("products.fishpond", "fishpond")
       .select([
         "products.id",
+        "products.pond_id",
         "products.sku",
         "products.status",
         "products.farm",
-        "products.detail",
+        "products.note",
         "products.createdAt",
         "products.updatedAt",
         "productimages.id",
@@ -172,10 +173,11 @@ const speciesController = {
       .leftJoinAndSelect("products.fishpond", "fishpond")
       .select([
         "products.id",
+        "products.pond_id",
         "products.sku",
         "products.status",
         "products.farm",
-        "products.detail",
+        "products.note",
         "products.createdAt",
         "products.updatedAt",
         "productimages.id",
@@ -215,10 +217,11 @@ const speciesController = {
       .leftJoinAndSelect("products.fishpond", "fishpond")
       .select([
         "products.id",
+        "products.pond_id",
         "products.sku",
         "products.status",
         "products.farm",
-        "products.detail",
+        "products.note",
         "products.createdAt",
         "products.updatedAt",
         "productimages.id",
@@ -249,7 +252,7 @@ const speciesController = {
     const objects: {
       title: string;
       species_id: number; //สายพันธ์ปลา
-      fish_pond_id: number; //สายพันธ์ปลา
+      pond_id: number; //สายพันธ์ปลา
       note: string;
       sku: string; //รหัสปลา
       farm: string; //ฟาร์ม
@@ -280,8 +283,8 @@ const speciesController = {
     const store = new Products();
     store.name = objects.title;
     store.cate_id = objects.species_id;
-    store.pond_id = objects.fish_pond_id;
-    store.detail = objects.note;
+    store.pond_id = objects.pond_id;
+    store.note = objects.note;
     store.sku = objects.sku;
     store.farm = objects.farm;
     store.size = objects.size;
@@ -331,16 +334,6 @@ const speciesController = {
         await db.getRepository(Productimages).save(storeImages);
       }
     }
-
-    // const result = await db.getRepository(Products).find({
-    //   relations: {
-    //     productimages: true,
-    //   },
-    //   where: {
-    //     id: data.id,
-    //   },
-    // });
-
     res.json({ status: true, message: `success is id = ${data.id}` });
   },
   filter: async (req: Request, res: Response) => {
@@ -351,7 +344,7 @@ const speciesController = {
       where: [
         req.query.sku!.length != 0 ? { sku: Like(`%${req.query.sku}%`) } : {},
         req.query.name!.length != 0 ? { name: Like(`%${req.query.name}%`) } : {},
-        req.query.detail!.length != 0 ? { detail: Like(`%${req.query.detail}%`) } : {},
+        req.query.note!.length != 0 ? { note: Like(`%${req.query.note}%`) } : {},
         req.query.farm!.length != 0 ? { farm: Like(`%${req.query.farm}%`) } : {},
         // req.query.size!.length != 0 ? { size: Like(`%${req.query.size}%`) } : {},
         req.query.size!.length != 0 ? { size: LessThanOrEqual(Number(req.query.size)) } : {},
@@ -393,7 +386,8 @@ const speciesController = {
   update: async (req: Request, res: Response) => {
     const objects: {
       name: string;
-      cate_id: number; //สายพันธ์ปลา
+      species_id: number; //สายพันธ์ปลา
+      pond_id: number; //สายพันธ์ปลา
       note: string;
       sku: string; //รหัสปลา
       farm: string; //ฟาร์ม
@@ -417,9 +411,10 @@ const speciesController = {
     }
 
     data.name = objects.name;
-    data.cate_id = objects.cate_id;
+    data.cate_id = objects.species_id;
+    data.pond_id = objects.pond_id;
     data.price = objects.price_sell;
-    data.detail = objects.note;
+    data.note = objects.note;
     data.sku = objects.sku;
     data.farm = objects.farm;
     data.size = objects.size;
