@@ -243,7 +243,8 @@ const speciesController = {
   add: async (req: Request, res: Response) => {
     const objects: {
       title: string;
-      cate_id: number; //สายพันธ์ปลา
+      species_id: number; //สายพันธ์ปลา
+      fish_pond_id: number; //สายพันธ์ปลา
       note: string;
       sku: string; //รหัสปลา
       farm: string; //ฟาร์ม
@@ -251,7 +252,7 @@ const speciesController = {
       gender: string; //เพศ
       age: string; // อายุ
       status: string; // ขาย
-      filename: string; //อัพโหลดรูปปลา
+      imageFish: string; //อัพโหลดรูปปลา
       video: string; //อัพโหลดรูปปลา
       certificate: string; //อัพโหลดรูปปลา
       weight: number; //น้ำหนัก
@@ -273,7 +274,8 @@ const speciesController = {
 
     const store = new Products();
     store.name = objects.title;
-    store.cate_id = objects.cate_id;
+    store.cate_id = objects.species_id;
+    store.pond_id = objects.fish_pond_id;
     store.detail = objects.note;
     store.sku = objects.sku;
     store.farm = objects.farm;
