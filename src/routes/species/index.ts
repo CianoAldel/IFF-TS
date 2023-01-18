@@ -9,12 +9,10 @@ router.post(
   [upload.fields([{ name: "imageFish" }, { name: "video" }, { name: "certificate", maxCount: 1 }])],
   speciesController.add
 );
-router.post(
-  // "/update/video/:productImageId",
-  "/update/video",
-  [upload.fields([{ name: "video" }])],
-  speciesController.updateOrInsertVideo
-);
+router.post("/update/video", [upload.fields([{ name: "video" }])], speciesController.insertOrupdateVDO);
+
+router.post("/update/imageFish/", [upload.fields([{ name: "imageFish" }])], speciesController.insertOrupdateImageFish);
+
 router.get("/", speciesController.index);
 router.get("/data", speciesController.data);
 router.get("/data/:id", speciesController.dataId);
@@ -37,13 +35,6 @@ router.post(
   "/update/certificate/:productId",
   [upload.fields([{ name: "certificate" }])],
   speciesController.updateCertificate
-);
-
-router.post(
-  // "/update/imageFish/:productImageId",
-  "/update/imageFish/:productId",
-  [upload.fields([{ name: "imageFish" }])],
-  speciesController.updateOrInsertImageFish
 );
 
 router.post(
