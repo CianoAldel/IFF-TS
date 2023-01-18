@@ -19,6 +19,8 @@ export class Categories {
   @PrimaryGeneratedColumn("increment")
   id!: number;
 
+  newId!: number;
+
   @Column({ type: "varchar", enum: ["species", "product"], nullable: true })
   type!: string;
 

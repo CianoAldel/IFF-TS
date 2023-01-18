@@ -13,6 +13,31 @@ const categoryController = {
     });
     res.json(categories);
   },
+
+  categories: async (req: Request, res: Response) => {
+    const categories = await db
+      .getRepository(Categories)
+      .createQueryBuilder("categories")
+      .where("type = :type", { type: "species" })
+      .select(["id AS value", "name AS label"])
+      .getRawMany();
+
+    //value = id ของ categories ที่จะส่งมาให้
+    //label = name ที่จะเอาไปแสดงผล
+
+    let array: Array<any | number> = [];
+
+    categories.map((element, index) => {
+      const result = {
+        id: index + 1,
+        value: element.value,
+        label: element.label,
+      };
+      array.push(result);
+    });
+
+    res.json(array);
+  },
   store: async (req: Request, res: Response) => {
     const body: { name: string; type: string } = req.body;
 

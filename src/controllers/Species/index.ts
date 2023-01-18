@@ -6,7 +6,7 @@ import { Biddings } from "../../entities/Biddings";
 import { Productimages } from "../../entities/Productimages";
 
 import useStorage from "../../libs/useStorage";
-import { IsNull, Like } from "typeorm";
+import { IsNull, LessThanOrEqual, Like, MoreThan } from "typeorm";
 import { TypedRequestBody } from "../../interface/TypedRequest";
 import { SpeciesType } from "../../interface/Species";
 import moment from "moment";
@@ -338,25 +338,49 @@ const speciesController = {
   },
   filter: async (req: Request, res: Response) => {
     let results = await db.getRepository(Products).find({
+      relations: {
+        productimages: true,
+      },
       where: [
         req.query.sku!.length != 0 ? { sku: Like(`%${req.query.sku}%`) } : {},
         req.query.name!.length != 0 ? { name: Like(`%${req.query.name}%`) } : {},
         req.query.detail!.length != 0 ? { detail: Like(`%${req.query.detail}%`) } : {},
         req.query.farm!.length != 0 ? { farm: Like(`%${req.query.farm}%`) } : {},
-        req.query.size!.length != 0 ? { size: Like(`%${req.query.size}%`) } : {},
+        // req.query.size!.length != 0 ? { size: Like(`%${req.query.size}%`) } : {},
+        req.query.size!.length != 0 ? { size: LessThanOrEqual(Number(req.query.size)) } : {},
         req.query.gender!.length != 0 ? { gender: Like(`%${req.query.gender}%`) } : {},
         req.query.age!.length != 0 ? { age: Like(`%${req.query.age}%`) } : {},
         req.query.status!.length != 0 ? { status: Like(`%${req.query.status}%`) } : {},
         req.query.bloodline!.length != 0 ? { bloodline: Like(`%${req.query.bloodline}%`) } : {},
-        String(req.query.price_buy).length != 0 ? { price_buy: Like(`%${req.query.price_buy}%`) } : {},
-        String(req.query.price_sell).length != 0 ? { price: Like(`%${req.query.price_sell}%`) } : {},
+        String(req.query.price_sell).length != 0 ? { price: LessThanOrEqual(req.query.price_sell) } : {},
+        String(req.query.price_buy).length != 0 ? { price_buy: LessThanOrEqual(req.query.price_buy) } : {},
         String(req.query.import_date).length != 0 ? { import_date: Like(`%${req.query.import_date}%`) } : {},
         String(req.query.fishpond_id).length != 0
           ? { fishpond: { fish_pond_id: Like(`%${req.query.fishpond_id}%`) } }
           : { fishpond: { fish_pond_id: IsNull() } },
       ],
+      select: {
+        id: true,
+        sku: true,
+        status: true,
+        farm: true,
+        certificate: true,
+        createdAt: true,
+        updatedAt: true,
+        bloodline: true,
+        birthday: true,
+        age: true,
+        gender: true,
+        import_date: true,
+        size: true,
+        price: true,
+        price_buy: true,
+        productimages: {
+          type: true,
+          filename: true,
+        },
+      },
     });
-    // if (!results == null) return res.json("ไม่พบข้อมูล ");
     res.json(results);
   },
   update: async (req: Request, res: Response) => {

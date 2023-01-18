@@ -28,6 +28,29 @@ const fishpondController = {
 
     res.json({ status: true, data: data });
   },
+  pond: async (req: Request, res: Response) => {
+    const categories = await db
+      .getRepository(Fishpond)
+      .createQueryBuilder("fishpond")
+      .select(["id AS value", "fish_pond_id AS label"])
+      .getRawMany();
+
+    //value = id ของ categories ที่จะส่งมาให้
+    //label = name ที่จะเอาไปแสดงผล
+
+    let array: Array<any | number> = [];
+
+    categories.map((element, index) => {
+      const result = {
+        id: index + 1,
+        value: element.value,
+        label: element.label,
+      };
+      array.push(result);
+    });
+
+    res.json(array);
+  },
   filter: async (req: TypedRequestQuery<FishPondType>, res: Response) => {
     let results = await db.getRepository(Fishpond).find({
       where: [
