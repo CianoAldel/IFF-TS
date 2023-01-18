@@ -32,11 +32,17 @@ router.post(
   [upload.fields([{ name: "certificate" }])],
   speciesController.updateCertificate
 );
-router.post("/update/video/:productImageId", [upload.fields([{ name: "video" }])], speciesController.updateVideo);
 router.post(
-  "/update/imageFish/:productImageId",
+  // "/update/video/:productImageId",
+  "/update/video/:product_id",
+  // [upload.fields([{ name: "video" }])],
+  speciesController.updateOrInsertVideo
+);
+router.post(
+  // "/update/imageFish/:productImageId",
+  "/update/imageFish/:product_id",
   [upload.fields([{ name: "imageFish" }])],
-  speciesController.updateImageFish
+  speciesController.updateOrInsertImageFish
 );
 
 router.post(
