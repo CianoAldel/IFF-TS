@@ -134,6 +134,7 @@ const speciesController = {
         "products.sku",
         "products.status",
         "products.farm",
+        "products.detail",
         "products.createdAt",
         "products.updatedAt",
         "productimages.id",
@@ -142,6 +143,7 @@ const speciesController = {
         "productimages.createdAt",
         "productimages.updatedAt",
         "products.certificate",
+        "categories.id",
         "categories.name",
         "products.bloodline",
         "products.birthday",
@@ -173,6 +175,7 @@ const speciesController = {
         "products.sku",
         "products.status",
         "products.farm",
+        "products.detail",
         "products.createdAt",
         "products.updatedAt",
         "productimages.id",
@@ -181,6 +184,7 @@ const speciesController = {
         "productimages.createdAt",
         "productimages.updatedAt",
         "products.certificate",
+        "categories.id",
         "categories.name",
         "products.bloodline",
         "products.birthday",
@@ -214,6 +218,7 @@ const speciesController = {
         "products.sku",
         "products.status",
         "products.farm",
+        "products.detail",
         "products.createdAt",
         "products.updatedAt",
         "productimages.id",
@@ -327,16 +332,16 @@ const speciesController = {
       }
     }
 
-    const result = await db.getRepository(Products).find({
-      relations: {
-        productimages: true,
-      },
-      where: {
-        id: data.id,
-      },
-    });
+    // const result = await db.getRepository(Products).find({
+    //   relations: {
+    //     productimages: true,
+    //   },
+    //   where: {
+    //     id: data.id,
+    //   },
+    // });
 
-    res.json({ status: true, data: result });
+    res.json({ status: true, message: `success is id = ${data.id}` });
   },
   filter: async (req: Request, res: Response) => {
     let results = await db.getRepository(Products).find({
