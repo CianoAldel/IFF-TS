@@ -20,8 +20,8 @@ router.post("/update/certificate", [upload.fields([{ name: "certificate" }])], s
 router.get("/", speciesController.index);
 
 router.get("/data", speciesController.data);
-router.get("/data/image/:id", speciesController.dataImageId);
 router.get("/data/:id", speciesController.dataId);
+router.get("/data/image/:id", speciesController.dataImageId);
 router.get("/edit/:id", speciesController.edit);
 router.post("/update/:id", speciesController.update);
 router.get("/delete/:id", speciesController.delete);

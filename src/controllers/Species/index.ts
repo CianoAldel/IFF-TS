@@ -167,6 +167,10 @@ const speciesController = {
         e.certificate = textUrl;
       }
 
+      e.productimages.map((e) => {
+        e.filename = "http://localhost:5001/storage/certificate/".concat(e.filename);
+      });
+
       return e;
     });
 
@@ -216,6 +220,11 @@ const speciesController = {
     if (query.certificate != null) {
       query.certificate = "http://localhost:5001/storage/certificate/".concat(query.certificate!);
     }
+
+    query.productimages.map((e) => {
+      e.filename = "http://localhost:5001/storage/species/".concat(e.filename);
+      return e;
+    });
 
     res.json({ status: true, data: query });
   },
