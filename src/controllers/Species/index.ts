@@ -156,9 +156,17 @@ const speciesController = {
         "products.price",
         "products.price_buy",
       ])
+      .orderBy("products.createdAt", "DESC")
       .getMany();
 
     if (!query) return res.status(404).json({ status: false, message: "ไม่พบข้อมูล" });
+
+    // const concatText = "http://localhost:5001/storage/certificate/";
+    // const result = query.map((e) => {
+    //   concatText.concat(e.certificate!);
+
+    //   return concatText;
+    // });
 
     res.json({ status: true, data: query });
   },
@@ -199,9 +207,14 @@ const speciesController = {
         "products.price_buy",
       ])
       .where("products.id = :id", { id: Number(id) })
-
       .getOne();
 
+    if (!query) return res.status(404).json({ status: false, message: "ไม่พบข้อมูล" });
+
+    res.json({ status: true, data: query.certificate });
+  },
+  dataImageId: async (req: Request, res: Response) => {
+    const query = await db.getRepository(Productimages).findOneBy({ id: Number(req.params.id) });
     if (!query) return res.status(404).json({ status: false, message: "ไม่พบข้อมูล" });
 
     res.json({ status: true, data: query });
@@ -304,8 +317,6 @@ const speciesController = {
 
     const images: Array<ImageFile> = [];
     const video: Array<ImageFile> = [];
-
-    console.log("test", req.files);
 
     if (req.files?.["imageFish"] != null) {
       req.files?.["imageFish"]!.map((file, index: number) => {
@@ -472,28 +483,24 @@ const speciesController = {
     }
   },
   insertOrupdateVDO: async (req: Request, res: Response) => {
-    // console.log(req.body);
     const { productId } = req.body;
     const { productImageId } = req.body;
-
-    const productImage = await db.getRepository(Productimages).findOne({ where: { id: Number(productImageId) } });
-    const product = await db.getRepository(Productimages).findOne({ where: { id: Number(productId) } });
-
-    if (!productImage || !product) {
-      res.json({ status: false, message: "ไม่พบข้อมูล" });
-    }
 
     if (productImageId) {
       const productImage = await db
         .getRepository(Productimages)
         .findOne({ where: { id: Number(productImageId), type: "video" } });
 
+      if (!productImage) {
+        return res.json({ status: false, message: "ไม่พบข้อมูลไอดีนี้ที่เป็นประเภทวิดีโอ" });
+      }
+
       if (productImage && productImage.type == "video") {
         productImage.filename = req.files?.["video"]![0].filename!;
         await db.getRepository(Productimages).save(productImage!);
-        res.json({ status: true, data: productImage });
+        return res.json({ status: true, data: productImage });
       } else {
-        res.json({ status: false, message: "productImageId ที่ส่งมาข้อมูลไม่ใช่ type video" });
+        return res.json({ status: false, message: "productImageId ที่ส่งมาข้อมูลไม่ใช่ type video" });
       }
     }
 
@@ -505,25 +512,23 @@ const speciesController = {
       storeImages.createdAt = new Date();
       storeImages.updatedAt = new Date();
       await db.getRepository(Productimages).save(storeImages);
-      res.json({ status: true, message: "เพิ่มรูปภาพสำเร็จแล้ว" });
+      return res.json({ status: true, message: "เพิ่มรูปภาพสำเร็จแล้ว" });
     }
 
-    res.json({ status: false, message: "ไม่สามาถอัพโหลดรูปภาพได้ กรุณาส่ง productId หรือ productImageId" });
+    // res.json({ status: false, message: "ไม่สามาถอัพโหลดรูปภาพได้ กรุณาส่ง productId หรือ productImageId" });
   },
   insertOrupdateImageFish: async (req: Request, res: Response) => {
-    const { productId } = req.body;
-    const { productImageId } = req.body;
-    const productImage = await db.getRepository(Productimages).findOne({ where: { id: Number(productImageId) } });
-    const product = await db.getRepository(Productimages).findOne({ where: { id: Number(productId) } });
-
-    if (!productImage || !product) {
-      res.json({ status: false, message: "ไม่พบข้อมูล" });
-    }
+    const { productId } = req.query;
+    const { productImageId } = req.query;
 
     if (productImageId) {
       const productImage = await db
         .getRepository(Productimages)
         .findOne({ where: { id: Number(productImageId), type: "image" } });
+
+      if (!productImage) {
+        res.json({ status: false, message: "ไม่พบข้อมูลไอดีนี้ที่เป็นประเภทรูปภาพ" });
+      }
 
       if (productImage && productImage.type == "image") {
         productImage.filename = req.files?.["imageFish"]![0].filename!;
@@ -536,7 +541,7 @@ const speciesController = {
 
     if (productId && req.files?.["imageFish"] != null) {
       const storeImages = new Productimages();
-      storeImages.product_id = productId;
+      storeImages.product_id = Number(productId);
       storeImages.filename = req.files?.["imageFish"]![0].filename!;
       storeImages.type = "imageFish";
       storeImages.createdAt = new Date();
@@ -545,7 +550,7 @@ const speciesController = {
       res.json({ status: true, message: "เพิ่มรูปภาพสำเร็จแล้ว" });
     }
 
-    res.json({ status: false, message: "ไม่สามาถอัพโหลดรูปภาพได้ กรุณาส่ง productId หรือ productImageId" });
+    // res.json({ status: false, message: "ไม่สามาถอัพโหลดรูปภาพได้ กรุณาส่ง productId หรือ productImageId" });
   },
   delete: async (req: Request, res: Response) => {
     await db

@@ -16,7 +16,10 @@ const storage = multer.diskStorage({
     let dir = object.folder;
 
     if (!object.folder) {
-      if (req.originalUrl.split("/")[4] == "imageFish" || req.originalUrl.split("/")[4] == "video") {
+      if (
+        req.originalUrl.split("/")[4].split("?")[0] == "imageFish" ||
+        req.originalUrl.split("/")[4].split("?")[0] == "video"
+      ) {
         dir = "species";
       } else {
         dir = req.originalUrl.replace("/api/", "");

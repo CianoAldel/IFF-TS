@@ -11,14 +11,16 @@ router.post(
 );
 router.post("/update/video", [upload.fields([{ name: "video" }])], speciesController.insertOrupdateVDO);
 
-router.post("/update/imageFish/", [upload.fields([{ name: "imageFish" }])], speciesController.insertOrupdateImageFish);
+router.post("/update/imageFish", [upload.fields([{ name: "imageFish" }])], speciesController.insertOrupdateImageFish);
 
 router.get("/", speciesController.index);
 router.get("/data", speciesController.data);
+router.get("/data/image/:id", speciesController.dataImageId);
 router.get("/data/:id", speciesController.dataId);
 router.get("/edit/:id", speciesController.edit);
 router.post("/update/:id", speciesController.update);
 router.get("/delete/:id", speciesController.delete);
+
 router.post(
   "/update/",
   [upload.fields([{ name: "filenames" }, { name: "video" }, { name: "certificate", maxCount: 1 }])],

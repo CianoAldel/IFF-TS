@@ -12,6 +12,9 @@ const fishpondController = {
       relations: {
         products: true,
       },
+      order: {
+        createdAt: "DESC",
+      },
     });
     res.json({ status: true, data: data });
   },
