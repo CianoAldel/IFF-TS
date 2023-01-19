@@ -17,6 +17,7 @@ const storage = multer.diskStorage({
 
     if (!object.folder) {
       if (
+        req.originalUrl == "/api/species" ||
         req.originalUrl.split("/")[4].split("?")[0] == "imageFish" ||
         req.originalUrl.split("/")[4].split("?")[0] == "video"
       ) {
