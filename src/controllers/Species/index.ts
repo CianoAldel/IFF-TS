@@ -161,14 +161,16 @@ const speciesController = {
 
     if (!query) return res.status(404).json({ status: false, message: "ไม่พบข้อมูล" });
 
-    // const concatText = "http://localhost:5001/storage/certificate/";
-    // const result = query.map((e) => {
-    //   concatText.concat(e.certificate!);
+    const result = query.map((e) => {
+      if (e.certificate != null) {
+        const textUrl = "http://localhost:5001/storage/certificate/".concat(e.certificate);
+        e.certificate = textUrl;
+      }
 
-    //   return concatText;
-    // });
+      return e;
+    });
 
-    res.json({ status: true, data: query });
+    res.json({ status: true, data: result });
   },
   dataId: async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -211,7 +213,11 @@ const speciesController = {
 
     if (!query) return res.status(404).json({ status: false, message: "ไม่พบข้อมูล" });
 
-    res.json({ status: true, data: query.certificate });
+    if (query.certificate != null) {
+      query.certificate = "http://localhost:5001/storage/certificate/".concat(query.certificate!);
+    }
+
+    res.json({ status: true, data: query });
   },
   dataImageId: async (req: Request, res: Response) => {
     const query = await db.getRepository(Productimages).findOneBy({ id: Number(req.params.id) });
@@ -371,17 +377,17 @@ const speciesController = {
         productimages: true,
       },
       where: [
-        req.query.sku!.length != 0 ? { sku: Like(`%${req.query.sku}%`) } : {},
-        req.query.name!.length != 0 ? { name: Like(`%${req.query.name}%`) } : {},
-        req.query.note!.length != 0 ? { note: Like(`%${req.query.note}%`) } : {},
-        req.query.farm!.length != 0 ? { farm: Like(`%${req.query.farm}%`) } : {},
-        req.query.size!.length != 0 ? { size: LessThanOrEqual(Number(req.query.size)) } : {},
-        req.query.gender!.length != 0 ? { gender: Like(`%${req.query.gender}%`) } : {},
-        req.query.age!.length != 0 ? { age: Like(`%${req.query.age}%`) } : {},
-        req.query.status!.length != 0 ? { status: Like(`%${req.query.status}%`) } : {},
-        req.query.bloodline!.length != 0 ? { bloodline: Like(`%${req.query.bloodline}%`) } : {},
-        String(req.query.price_sell).length != 0 ? { price: LessThanOrEqual(req.query.price_sell) } : {},
-        String(req.query.price_buy).length != 0 ? { price_buy: LessThanOrEqual(req.query.price_buy) } : {},
+        req.query.sku ? { sku: Like(`%${req.query.sku}%`) } : {},
+        req.query.name ? { name: Like(`%${req.query.name}%`) } : {},
+        req.query.note ? { note: Like(`%${req.query.note}%`) } : {},
+        req.query.farm ? { farm: Like(`%${req.query.farm}%`) } : {},
+        req.query.size ? { size: Like(`${req.query.size}`) } : {},
+        req.query.gender ? { gender: Like(`%${req.query.gender}%`) } : {},
+        req.query.age ? { age: Like(`%${req.query.age}%`) } : {},
+        req.query.status ? { status: Like(`%${req.query.status}%`) } : {},
+        req.query.bloodline ? { bloodline: Like(`%${req.query.bloodline}%`) } : {},
+        req.query.price_sell ? { price: LessThanOrEqual(req.query.price_sell) } : {},
+        req.query.price_buy ? { price_buy: LessThanOrEqual(req.query.price_buy) } : {},
         String(req.query.import_date).length != 0 ? { import_date: Like(`%${req.query.import_date}%`) } : {},
         String(req.query.fishpond_id).length != 0
           ? { fishpond: { fish_pond_id: Like(`%${req.query.fishpond_id}%`) } }
@@ -468,7 +474,10 @@ const speciesController = {
     res.json({ status: true, data: result });
   },
   updateCertificate: async (req: Request, res: Response) => {
-    const { productId } = req.params; // productId
+    const { productId } = req.query; // productId
+
+    // console.log("productId", productId);
+
     const data = await db.getRepository(Products).findOne({ where: { id: Number(productId) } });
 
     if (!data) {
@@ -483,8 +492,8 @@ const speciesController = {
     }
   },
   insertOrupdateVDO: async (req: Request, res: Response) => {
-    const { productId } = req.body;
-    const { productImageId } = req.body;
+    const { productId } = req.query;
+    const { productImageId } = req.query;
 
     if (productImageId) {
       const productImage = await db
@@ -506,7 +515,7 @@ const speciesController = {
 
     if (productId && req.files?.["video"] != null) {
       const storeImages = new Productimages();
-      storeImages.product_id = productId;
+      storeImages.product_id = Number(productId);
       storeImages.filename = req.files?.["video"]![0].filename!;
       storeImages.type = "video";
       storeImages.createdAt = new Date();

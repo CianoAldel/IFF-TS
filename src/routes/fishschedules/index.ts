@@ -6,6 +6,7 @@ const router = Router();
 router.get("/", fishschedulesController.show);
 router.post("/add", fishschedulesController.add);
 router.post("/schedules/:id", fishschedulesController.schedules);
+router.post("/schedules1/:id", fishschedulesController.schedules1);
 router.get("/betweenManageDate", fishschedulesController.showBetweenManage);
 
 router.post("/edit/:id", fishschedulesController.edit);
