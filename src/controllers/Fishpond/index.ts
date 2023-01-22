@@ -75,14 +75,13 @@ const fishpondController = {
     fishpond.use_pond_date = new Date(req.body.use_pond_date);
     fishpond.status = req.body.status;
     fishpond.note = req.body.note;
-    fishpond.createdAt = moment().add(7, "hour").toDate();
-    fishpond.updatedAt = moment().add(7, "hour").toDate();
+    fishpond.createdAt = moment().toDate();
+    fishpond.updatedAt = moment().toDate();
 
     const dataId = await db.getRepository(Fishpond).save(fishpond);
 
     res.status(200).json({ status: true, message: `เพิ่มข้อมุลสำเร็จ ไอดีที่ ${dataId.id}` });
   },
-
   delete: async (req: Request, res: Response) => {
     const id = Number(req.params.id);
     await db.getRepository(Fishpond).delete({ id: id });

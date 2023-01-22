@@ -40,6 +40,7 @@ declare global {
         filenames?: [{ filename: string }];
         video?: [{ filename: string }];
         imageFish?: [{ filename: string }];
+        fishGroupFile?: [{ filename: string }];
       };
     }
   }
@@ -153,7 +154,7 @@ const speciesController = {
         "products.import_date",
         "products.size",
         "fishpond.fish_pond_id",
-        "products.price",
+        "products.price_sell",
         "products.price_buy",
       ])
       .orderBy("products.createdAt", "DESC")
@@ -318,15 +319,20 @@ const speciesController = {
     store.age = objects.age;
     store.status = objects.status;
     store.certificate = certificate!;
-    store.createdAt = moment().add(7, "hour").toDate();
-    store.updatedAt = moment().add(7, "hour").toDate();
+    store.createdAt = moment().toDate();
+    store.updatedAt = moment().toDate();
     store.birthday = new Date(objects.birthday);
     store.weight = objects.weight;
     store.length = objects.length;
-    store.price = objects.price_sell;
+    store.price_sell = objects.price_sell;
     store.price_buy = objects.price_buy;
     store.import_date = new Date(objects.import_date);
     store.bloodline = objects.bloodline;
+
+    const checkSkuId = await db.getRepository(Products).findOneBy({ sku: objects.sku });
+    if (checkSkuId) {
+      return res.json({ status: false, message: "คุณมีข้อมูลไอดีปลาตัวนี้อยู่แล้ว" });
+    }
 
     const data = await db.getRepository(Products).save(store);
 
@@ -390,9 +396,9 @@ const speciesController = {
         req.query.name ? { name: Like(`%${req.query.name}%`) } : {},
         req.query.note ? { note: Like(`%${req.query.note}%`) } : {},
         req.query.farm ? { farm: Like(`%${req.query.farm}%`) } : {},
-        req.query.size ? { size: Like(`${req.query.size}`) } : {},
+        req.query.size ? { size: LessThanOrEqual(`${req.query.size}`) } : {},
         req.query.gender ? { gender: Like(`%${req.query.gender}%`) } : {},
-        req.query.age ? { age: Like(`%${req.query.age}%`) } : {},
+        req.query.age ? { age: LessThanOrEqual(`%${req.query.age}%`) } : {},
         req.query.status ? { status: Like(`%${req.query.status}%`) } : {},
         req.query.bloodline ? { bloodline: Like(`%${req.query.bloodline}%`) } : {},
         req.query.price_sell ? { price: LessThanOrEqual(req.query.price_sell) } : {},
@@ -416,7 +422,7 @@ const speciesController = {
         gender: true,
         import_date: true,
         size: true,
-        price: true,
+        price_sell: true,
         price_buy: true,
         productimages: {
           type: true,
@@ -456,7 +462,7 @@ const speciesController = {
     data.name = objects.name;
     data.cate_id = objects.species_id;
     data.pond_id = objects.pond_id;
-    data.price = objects.price_sell;
+    data.price_sell = objects.price_sell;
     data.note = objects.note;
     data.sku = objects.sku;
     data.farm = objects.farm;
@@ -577,6 +583,12 @@ const speciesController = {
       .from(Products)
       .where("id = :id", { id: Number(req.params?.id) })
       .execute();
+
+    const query = await db.getRepository(Products).findOneBy({ id: Number(req.params.id) });
+
+    if (!query) {
+      return res.json({ status: false, message: "คุณไม่สามารถลบข้อมูลได้ เนื่องจากไม่มีข้อมูลไอดีนี้" });
+    }
 
     res.json({ status: true, message: `ลบข้อมูลที่ ${req.params?.id} เรียบร้อยแล้ว` });
   },

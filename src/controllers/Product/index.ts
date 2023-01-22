@@ -57,7 +57,7 @@ const productController = {
         type: true,
         name: true,
         note: true,
-        price: true,
+        price_sell: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -79,7 +79,7 @@ const productController = {
         cate_id: true,
         type: true,
         name: true,
-        price: true,
+        price_sell: true,
         note: true,
         createdAt: true,
         updatedAt: true,
@@ -117,7 +117,7 @@ const productController = {
     create.name = object.title;
     create.cate_id = object.cate_id;
     create.note = object.content;
-    create.price = object.price;
+    create.price_sell = object.price;
 
     const data = await db.getRepository(Products).save(create);
 
@@ -155,7 +155,7 @@ const productController = {
     data.name = title;
     data.note = content;
     data.cate_id = cate_id;
-    data.price = price;
+    data.price_sell = price;
 
     await db.getRepository(Products).save(data);
 

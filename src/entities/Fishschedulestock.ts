@@ -1,7 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn, ManyToOne } from "typeorm";
 import { Products } from "./Products";
-import { Fishschedules } from "./Fishschedules";
+import { SchedulesCategory } from "./Schedulescategory";
 import { Fishpond } from "./Fishpond";
+import { Fishgroup } from "./Fishgroup";
+import { FishschedulesRepeat } from "./Fishschedulesrepeat";
 
 @Entity("fishschedules_stock")
 export class Fishschedulestock {
@@ -9,17 +11,20 @@ export class Fishschedulestock {
   id!: number;
 
   @Column("int", { nullable: true })
-  schedule_id!: number;
+  fish_repeat_id!: number;
 
   @Column("int", { nullable: true })
   product_id!: number;
 
   @Column("int", { nullable: true })
+  fishgroup_id!: number;
+
+  @Column("int", { nullable: true })
   pond_id!: number;
 
-  @ManyToOne(() => Fishschedules, (fishschedules) => fishschedules.fishschedulestock)
-  @JoinColumn({ name: "schedule_id" })
-  fishschedules!: Fishschedules;
+  @ManyToOne(() => FishschedulesRepeat, (fishschedulesrepeat) => fishschedulesrepeat.fishschedulestock)
+  @JoinColumn({ name: "fish_repeat_id" })
+  fishschedulesrepeat!: FishschedulesRepeat;
 
   @ManyToOne(() => Products, (products) => products.fishschedulestock)
   @JoinColumn({ name: "product_id" })
@@ -28,4 +33,8 @@ export class Fishschedulestock {
   @ManyToOne(() => Fishpond, (fishpond) => fishpond.fishschedulestock)
   @JoinColumn({ name: "pond_id" })
   fishpond!: Fishpond;
+
+  @ManyToOne(() => Fishgroup, (fishgroup) => fishgroup.fishschedulestock)
+  @JoinColumn({ name: "fishgroup_id" })
+  fishgroup!: Fishgroup;
 }

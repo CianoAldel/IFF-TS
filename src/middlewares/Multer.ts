@@ -13,6 +13,10 @@ const storage = multer.diskStorage({
       object.folder = "certificate";
     }
 
+    if (file.fieldname == "fishGroupFile") {
+      object.folder = "fishgroup_file";
+    }
+
     let dir = object.folder;
 
     if (!object.folder) {

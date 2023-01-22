@@ -17,6 +17,7 @@ import { Fishpond } from "./Fishpond";
 import { Fishgrow } from "./Fishgrow";
 import { Fishhealth } from "./Fishhealth";
 import { Fishschedulestock } from "./Fishschedulestock";
+import { Fishgroup } from "./Fishgroup";
 
 @Entity()
 export class Products {
@@ -29,6 +30,9 @@ export class Products {
   @Column("int", { nullable: true })
   pond_id!: number;
 
+  @Column("int", { nullable: true })
+  group_id!: number;
+
   @Column({ type: "varchar", enum: ["species", "product"], nullable: true })
   type!: string;
 
@@ -36,7 +40,7 @@ export class Products {
   name!: string;
 
   @Column("int", { nullable: true })
-  price!: number;
+  price_sell!: number;
 
   @Column("text", { nullable: true })
   note!: string;
@@ -120,6 +124,10 @@ export class Products {
   @ManyToOne(() => Fishpond, (fishpond) => fishpond.products)
   @JoinColumn({ name: "pond_id" })
   fishpond!: Fishpond;
+
+  @ManyToOne(() => Fishgroup, (fishgroup) => fishgroup.products)
+  @JoinColumn({ name: "id" })
+  fishgroup!: Fishgroup;
 
   @ManyToOne(() => Categories, (categories) => categories.products)
   @JoinColumn({ name: "cate_id" })

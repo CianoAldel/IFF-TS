@@ -1,24 +1,20 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn, ManyToOne } from "typeorm";
 import { Fishpond } from "./Fishpond";
 import { Products } from "./Products";
-import { Schedulecount } from "./Schedulecount";
 import { Fishschedulestock } from "./Fishschedulestock";
+import { SchedulesCategory } from "./Schedulescategory";
+import { Fishscheduleslog } from "./Fishscheduleslog";
 
-// enum Type {
-//   "species",
-//   "product",
-// }
-
-@Entity("fish_schedule")
-export class Fishschedules {
+@Entity("fishschedule_repeat")
+export class FishschedulesRepeat {
   @PrimaryGeneratedColumn("increment")
   id!: number;
 
   @Column("int", { nullable: true })
-  user_id!: number | null;
+  schedules_cate_id!: number;
 
   @Column("int", { nullable: true })
-  event_status!: string;
+  user_id!: number | null;
 
   @Column("datetime", { nullable: true })
   date_start!: Date;
@@ -50,11 +46,15 @@ export class Fishschedules {
   @Column("datetime", { nullable: true })
   updatedAt!: Date;
 
-  @OneToMany(() => Schedulecount, (schedulecount) => schedulecount.fishschedules)
-  @JoinColumn({ name: "id" })
-  schedulecount!: Schedulecount[];
+  @ManyToOne(() => SchedulesCategory, (fishschedules) => fishschedules.fishschedulesrepeat)
+  @JoinColumn({ name: "schedules_cate_id" })
+  schedulescategory!: SchedulesCategory;
 
-  @OneToMany(() => Fishschedulestock, (fishschedulestock) => fishschedulestock.fishschedules)
+  @OneToMany(() => Fishscheduleslog, (fishschedules) => fishschedules.fishschedulesRepeat)
+  @JoinColumn({ name: "id" })
+  fishscheduleslog!: Fishscheduleslog[];
+
+  @OneToMany(() => Fishschedulestock, (fishschedules) => fishschedules.fishschedulesrepeat)
   @JoinColumn({ name: "id" })
   fishschedulestock!: Fishschedulestock[];
 }

@@ -4,9 +4,15 @@ import fishschedulesController from "../../controllers/Fishschedules/index";
 const router = Router();
 
 router.get("/", fishschedulesController.show);
+router.get("/getLogRepeatSchedules", fishschedulesController.logSchedulesRepeat);
 router.post("/add", fishschedulesController.add);
-router.post("/schedules/:id", fishschedulesController.schedules);
-router.post("/schedules1/:id", fishschedulesController.schedules1);
+router.get("/get", fishschedulesController.get);
+
+//fish schedules add event status and get event status
+router.post("/addEventstatus", fishschedulesController.addEventStatus);
+router.get("/getEventstatus", fishschedulesController.getEventStatus);
+
+router.post("/schedulesTest", fishschedulesController.schedulesTest);
 router.get("/betweenManageDate", fishschedulesController.showBetweenManage);
 
 router.post("/edit/:id", fishschedulesController.edit);

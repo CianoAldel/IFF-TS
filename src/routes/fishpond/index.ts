@@ -4,8 +4,9 @@ const router = Router();
 
 router.get("/label", fishPondController.pond);
 router.get("/", fishPondController.show);
-router.get("/:id", fishPondController.showById);
 router.get("/filter", fishPondController.filter);
+
+router.get("/:id", fishPondController.showById);
 router.post("/add", fishPondController.add);
 router.get("/edit/:id", fishPondController.edit);
 router.post("/update/:id", fishPondController.update);

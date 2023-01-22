@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn, ManyToOne } from "typeorm";
 import { Products } from "./Products";
-import { Fishschedules } from "./Fishschedules";
+import { SchedulesCategory } from "./Schedulescategory";
 import { Fishschedulestock } from "./Fishschedulestock";
 
 @Entity("fish_pond")

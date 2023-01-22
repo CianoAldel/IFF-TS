@@ -4,3 +4,6 @@ import fishscheduleStockController from "../../controllers/Fishschedulestock/ind
 const router = Router();
 
 router.get("/", fishscheduleStockController.show);
+router.get("/shcedulesMain", fishscheduleStockController.show);
+
+export default router;
