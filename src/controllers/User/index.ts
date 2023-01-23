@@ -167,6 +167,53 @@ const userController = {
     await db.getRepository(Users).save(user!);
     res.json({ message: "success" });
   },
+
+  getByRole: async (req: Request, res: Response) => {
+    const resultRole = await db.getRepository(Users).findOne({ where: { role: String(req.query.role) } });
+
+    if (!resultRole) {
+      return res.json({ status: false, message: "ไม่พบผู้ใช้บทบาทนี้" });
+    }
+
+    res.json({ status: true, data: resultRole });
+  },
+
+  getById: async (req: Request, res: Response) => {
+    const userById = await db.getRepository(Users).findOne({ where: { id: Number(req.query.id) } });
+
+    if (!userById) {
+      return res.json({ status: false, message: "ไม่พบผู้ใช้ไอดีนี้" });
+    }
+
+    res.json({ status: true, data: userById });
+  },
+
+  gets: async (req: Request, res: Response) => {
+    const userList = await db.getRepository(Users).find();
+
+    if (!userList) {
+      return res.json({ status: false, message: "ไม่พบผู้ใช้" });
+    }
+
+    res.json({ status: true, data: userList });
+  },
+
+  updateUser: async (req: Request, res: Response) => {
+    const objects: { name: string; displayName: string; role: string; phone: string; email: string } = req.body;
+
+    const user = await db.getRepository(Users).findOne({ where: { id: Number(req.query.id) } });
+
+    if (!user) {
+      return res.json({ status: false, message: "ไม่พบผู้ใช้" });
+    }
+
+    user.name = objects.name;
+    user.displayName = objects.displayName;
+    user.email = objects.email;
+    user.role = objects.role;
+
+    res.json({ status: true, message: "อัพเดทผู้ใช้สำเร็จแล้ว" });
+  },
 };
 
 export default userController;

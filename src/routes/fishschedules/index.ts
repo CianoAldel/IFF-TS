@@ -7,6 +7,7 @@ router.get("/", fishschedulesController.show);
 router.get("/getLogRepeatSchedules", fishschedulesController.logSchedulesRepeat);
 router.post("/add", fishschedulesController.add);
 router.get("/get", fishschedulesController.get);
+router.get("/getById", fishschedulesController.getById);
 
 //fish schedules add event status and get event status
 router.post("/addEventstatus", fishschedulesController.addEventStatus);

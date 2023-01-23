@@ -34,7 +34,10 @@ export class Users {
   @Column("varchar", { nullable: true })
   password!: string;
 
-  @Column({ type: "varchar", enum: ["super-admin", "admin", "staff", "user"], nullable: true })
+  // @Column({ type: "varchar", enum: ["super-admin", "admin", "staff", "user"], nullable: true })
+  // role!: string;
+
+  @Column({ type: "varchar", enum: ["super-admin", "admin", "sellstaff", "farmstaff"], nullable: true })
   role!: string;
 
   @Column("datetime") //defualt : new Date()

@@ -12,23 +12,39 @@ import * as util from "../Fishschedules/util";
 
 const fishschedulesController = {
   show: async (req: Request, res: Response) => {
-    //รับ query กับ body
-
     if (req.query.event_status != null) {
       const result = await db
         .getRepository(FishschedulesRepeat)
-        .createQueryBuilder("fishschedulesrepeat")
-        .leftJoinAndSelect("fishschedulesrepeat.schedulescategory", "catgory")
-        .leftJoinAndSelect("fishschedulesrepeat.fishschedulestock", "stock")
-        .leftJoinAndSelect("fishschedulesrepeat.fishscheduleslog", "log")
+        .createQueryBuilder("repeat")
+        .leftJoinAndSelect("repeat.schedulescategory", "catgory")
+        .leftJoinAndSelect("repeat.fishschedulestock", "stock")
+        .leftJoinAndSelect("repeat.fishscheduleslog", "log")
         .leftJoinAndSelect("stock.products", "products")
         .leftJoinAndSelect("stock.fishpond", "ponds")
-        .select([""])
+        .select([
+          "repeat.id",
+          "repeat.date_start",
+          "repeat.user_id",
+          "repeat.note",
+          "repeat.repeat_date",
+          "repeat.manage_status",
+          "repeat.notification_status",
+          "repeat.createdAt",
+          "repeat.updatedAt",
+          "catgory.event_status",
+          "stock.fish_repeat_id",
+          "stock.fishgroup_id",
+          "stock.product_id",
+          "stock.pond_id",
+          "products.id",
+          "products.sku",
+          "ponds.fish_pond_id",
+        ])
         .andWhere("catgory.event_status = :event_status", {
           event_status: req.query.event_status,
         })
-        .orderBy("fishschedulesrepeat.priority", "ASC")
-        .addOrderBy("fishschedulesrepeat.date_schedules", "ASC")
+        .orderBy("repeat.priority", "ASC")
+        .addOrderBy("repeat.date_schedules", "ASC")
         .getMany();
 
       if (!result) return res.status(400).json({ message: "no status in your request" });
@@ -37,14 +53,33 @@ const fishschedulesController = {
     } else {
       const result = await db
         .getRepository(FishschedulesRepeat)
-        .createQueryBuilder("fishschedulesrepeat")
-        .leftJoinAndSelect("fishschedulesrepeat.schedulescategory", "category")
-        .leftJoinAndSelect("fishschedulesrepeat.fishschedulestock", "stock")
+        .createQueryBuilder("repeat")
+        .leftJoinAndSelect("repeat.schedulescategory", "category")
+        .leftJoinAndSelect("repeat.fishschedulestock", "stock")
         .leftJoinAndSelect("stock.products", "products")
         .leftJoinAndSelect("stock.fishpond", "ponds")
         .leftJoinAndSelect("stock.fishgroup", "groups")
-        .orderBy("fishschedulesrepeat.priority", "ASC")
-        .addOrderBy("fishschedulesrepeat.date_schedules", "ASC")
+        .select([
+          "repeat.id",
+          "repeat.date_start",
+          "repeat.user_id",
+          "repeat.note",
+          "repeat.repeat_date",
+          "repeat.manage_status",
+          "repeat.notification_status",
+          "repeat.createdAt",
+          "repeat.updatedAt",
+          "category.event_status",
+          "stock.fish_repeat_id",
+          "stock.fishgroup_id",
+          "stock.product_id",
+          "stock.pond_id",
+          "products.id",
+          "products.sku",
+          "ponds.fish_pond_id",
+        ])
+        .orderBy("repeat.priority", "ASC")
+        .addOrderBy("repeat.date_schedules", "ASC")
         .getMany();
 
       if (!result) return res.status(400).json({ message: "no status in your request" });
@@ -56,12 +91,69 @@ const fishschedulesController = {
   get: async (req: Request, res: Response) => {
     const result = await db
       .getRepository(SchedulesCategory)
-      .createQueryBuilder("schedulescategory")
-      .leftJoinAndSelect("schedulescategory.fishschedulesrepeat", "repeat")
+      .createQueryBuilder("category")
+      .leftJoinAndSelect("category.fishschedulesrepeat", "repeat")
       .leftJoinAndSelect("repeat.fishschedulestock", "stock")
-      .leftJoinAndSelect("repeat.fishscheduleslog", "log")
       .leftJoinAndSelect("stock.products", "products")
       .leftJoinAndSelect("stock.fishpond", "ponds")
+      .leftJoinAndSelect("stock.fishgroup", "groups")
+      .select([
+        "repeat.id",
+        "repeat.date_start",
+        "repeat.user_id",
+        "repeat.note",
+        "repeat.repeat_date",
+        "repeat.manage_status",
+        "repeat.notification_status",
+        "repeat.createdAt",
+        "repeat.updatedAt",
+        "category.event_status",
+        "stock.fish_repeat_id",
+        "stock.fishgroup_id",
+        "stock.product_id",
+        "stock.pond_id",
+        "products.id",
+        "products.sku",
+        "ponds.fish_pond_id",
+      ])
+      .orderBy("repeat.priority", "ASC")
+      .addOrderBy("repeat.date_schedules", "ASC")
+      .getMany();
+
+    res.json({ status: true, data: result });
+  },
+
+  getById: async (req: Request, res: Response) => {
+    const result = await db
+      .getRepository(SchedulesCategory)
+      .createQueryBuilder("category")
+      .leftJoinAndSelect("category.fishschedulesrepeat", "repeat")
+      .leftJoinAndSelect("repeat.fishschedulestock", "stock")
+      .leftJoinAndSelect("stock.products", "products")
+      .leftJoinAndSelect("stock.fishpond", "ponds")
+      .leftJoinAndSelect("stock.fishgroup", "groups")
+      .select([
+        "repeat.id",
+        "repeat.date_start",
+        "repeat.user_id",
+        "repeat.note",
+        "repeat.repeat_date",
+        "repeat.manage_status",
+        "repeat.notification_status",
+        "repeat.createdAt",
+        "repeat.updatedAt",
+        "category.event_status",
+        "stock.fish_repeat_id",
+        "stock.fishgroup_id",
+        "stock.product_id",
+        "stock.pond_id",
+        "products.id",
+        "products.sku",
+        "ponds.fish_pond_id",
+      ])
+      .andWhere("repeat.id = :id", {
+        id: req.query.id,
+      })
       .orderBy("repeat.priority", "ASC")
       .addOrderBy("repeat.date_schedules", "ASC")
       .getMany();
@@ -75,16 +167,50 @@ const fishschedulesController = {
     const end: Date = req.body.end;
 
     const result = await db
-      .getRepository(Fishschedulestock)
-      .createQueryBuilder("fishschedulestock")
-      .leftJoinAndSelect("fishschedulestock.fishschedules", "fishschedules")
-      .leftJoinAndSelect("fishschedulestock.products", "products")
-      .leftJoinAndSelect("products.fishpond", "fishpond")
-      .where(`fishschedules.date_schedules BETWEEN '${start}' AND '${end}'`)
-      .andWhere("fishschedules.manage_status = :manage_status", {
+      .getRepository(FishschedulesRepeat)
+      .createQueryBuilder("repeat")
+      .leftJoinAndSelect("repeat.schedulescategory", "catgory")
+      .leftJoinAndSelect("repeat.fishschedulestock", "stock")
+      .leftJoinAndSelect("repeat.fishscheduleslog", "log")
+      .leftJoinAndSelect("stock.products", "products")
+      .leftJoinAndSelect("stock.fishpond", "ponds")
+      .select([
+        "repeat.id",
+        "repeat.date_start",
+        "repeat.user_id",
+        "repeat.note",
+        "repeat.repeat_date",
+        "repeat.manage_status",
+        "repeat.notification_status",
+        "repeat.createdAt",
+        "repeat.updatedAt",
+        "catgory.event_status",
+        "stock.fish_repeat_id",
+        "stock.fishgroup_id",
+        "stock.product_id",
+        "stock.pond_id",
+        "products.id",
+        "products.sku",
+        "ponds.fish_pond_id",
+      ])
+      .where(`repeat.date_schedules BETWEEN '${start}' AND '${end}'`)
+      .orWhere("repeat.manage_status = :manage_status", {
         manage_status: manage_status,
       })
+      .orderBy("repeat.priority", "ASC")
+      .addOrderBy("repeat.date_schedules", "ASC")
       .getMany();
+    // const result = await db
+    //   .getRepository(Fishschedulestock)
+    //   .createQueryBuilder("fishschedulestock")
+    //   .leftJoinAndSelect("fishschedulestock.fishschedules", "fishschedules")
+    //   .leftJoinAndSelect("fishschedulestock.products", "products")
+    //   .leftJoinAndSelect("products.fishpond", "fishpond")
+    //   .where(`fishschedules.date_schedules BETWEEN '${start}' AND '${end}'`)
+    //   .andWhere("fishschedules.manage_status = :manage_status", {
+    //     manage_status: manage_status,
+    //   })
+    //   .getMany();
 
     if (!result) return res.status(400).json({ message: "no data body in your request" });
 
@@ -206,12 +332,13 @@ const fishschedulesController = {
     const note = req.query.note as string;
 
     if (fish_repeat_id == 0) {
-      return res.json({ status: false, message: "โปรดระบุไอดีแจ้งเตือนของคุณ หรือไอดีแจ้งเตือนทำซ้ำของคุณ" });
+      return res.json({ status: false, message: "โปรดระบุไอดีแจ้งเตือนของคุณ" });
     }
 
     if (fish_repeat_id) {
       const findSchedulesRepeat = await db.getRepository(FishschedulesRepeat).findOneBy({ id: fish_repeat_id });
 
+      // return res.json(findSchedulesRepeat)
       if (!findSchedulesRepeat) return res.json({ status: false, message: "คุณไม่มีไอดีการแจ้งเตือนทำซ้ำนี้" });
       if (findSchedulesRepeat && findSchedulesRepeat.manage_status !== "สำเร็จ") {
         const priority = await util.manageStatusRepeat(manage_status);
@@ -220,14 +347,22 @@ const fishschedulesController = {
           return await util.manageStatusUpdateSuccessRepeat(findSchedulesRepeat, priority, manage_status, note, res);
 
         if (
-          findSchedulesRepeat!.repeat_date === null ||
-          (findSchedulesRepeat!.repeat_date !== null && manage_status === "กำลังดำเนินการ")
+          findSchedulesRepeat.repeat_date === null ||
+          (findSchedulesRepeat.repeat_date !== null && manage_status === "กำลังดำเนินการ")
         )
           return await util.manageStatusInProgressRepeat(findSchedulesRepeat, priority, manage_status, note, res);
+
+        if (
+          findSchedulesRepeat.repeat_date === null ||
+          (findSchedulesRepeat.repeat_date !== null && manage_status === "รอดำเนินการ")
+        )
+          return await util.manageStatusPending(findSchedulesRepeat, priority, manage_status, note, res);
 
         await util.checkRepeatSchedulesDate(findSchedulesRepeat, priority, manage_status, note, res);
       }
     }
+
+    // res.json({ status: false, message: "คุณไม่ควรเปลี่ยนสถานะเวลาที่สำเร็จไปแล้ว" });
   },
 
   edit: async (req: Request, res: Response) => {
@@ -245,7 +380,12 @@ const fishschedulesController = {
   logSchedulesRepeat: async (req: Request, res: Response) => {
     const fishschedulesRepeatId = Number(req.query.fishschedulesRepeatId);
     const result = await db.getRepository(Fishscheduleslog).find({ where: { fish_repeat_id: fishschedulesRepeatId } });
-    res.status(200).json(result);
+
+    if (result.length == 0) {
+      res.status(200).json({ status: false, message: "ไม่พบข้อมูล" });
+    }
+
+    res.status(200).json({ status: true, data: result });
   },
 
   update: async (req: TypedRequestBody<Schedules>, res: Response) => {

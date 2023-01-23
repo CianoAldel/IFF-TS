@@ -4,6 +4,10 @@ import auth from "../../middlewares/passport-auth";
 const router = Router();
 
 router.put(`/`, userController.update);
+router.get("/", userController.gets);
+router.get("/getById", userController.getById);
+router.get("/getByRole", userController.getByRole);
+router.get("/updateUser", userController.updateUser);
 
 router.get("/address", userController.address.index);
 router.post("/address", userController.address.create);
