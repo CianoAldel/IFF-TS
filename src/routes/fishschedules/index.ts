@@ -4,7 +4,8 @@ import fishschedulesController from "../../controllers/Fishschedules/index";
 const router = Router();
 
 router.get("/", fishschedulesController.show);
-router.get("/getLogRepeatSchedules", fishschedulesController.logSchedulesRepeat);
+router.get("/getLogById", fishschedulesController.logSchedulesRepeat);
+router.get("/getLogs", fishschedulesController.logs);
 router.post("/add", fishschedulesController.add);
 router.get("/get", fishschedulesController.get);
 router.get("/getById", fishschedulesController.getById);

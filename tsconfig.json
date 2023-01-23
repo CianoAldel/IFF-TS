@@ -3,6 +3,7 @@
     "target": "ES6",
     "module": "commonjs",
     "declaration": true,
+    "noImplicitAny": false,
     "declarationMap": true,
     "inlineSources": false,
     "isolatedModules": false,

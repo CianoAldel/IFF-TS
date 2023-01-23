@@ -9,6 +9,9 @@ import { Fishschedulestock } from "../../entities/Fishschedulestock";
 import { FishschedulesRepeat } from "../../entities/Fishschedulesrepeat";
 import { Fishscheduleslog } from "../../entities/Fishscheduleslog";
 import * as util from "../Fishschedules/util";
+import { Products } from "../../entities/Products";
+import { Fishpond } from "../../entities/Fishpond";
+import { Fishgroup } from "../../entities/Fishgroup";
 
 const fishschedulesController = {
   show: async (req: Request, res: Response) => {
@@ -47,6 +50,16 @@ const fishschedulesController = {
         .addOrderBy("repeat.date_schedules", "ASC")
         .getMany();
 
+      result.map((stock) => {
+        stock.fishschedulestock.map((key) => {
+          Object.keys(key).forEach((e) => {
+            if (key[e] == null) {
+              delete key[e];
+            }
+          });
+        });
+      });
+
       if (!result) return res.status(400).json({ message: "no status in your request" });
 
       res.json(result);
@@ -82,6 +95,16 @@ const fishschedulesController = {
         .addOrderBy("repeat.date_schedules", "ASC")
         .getMany();
 
+      result.map((stock) => {
+        stock.fishschedulestock.map((key) => {
+          Object.keys(key).forEach((e) => {
+            if (key[e] == null) {
+              delete key[e];
+            }
+          });
+        });
+      });
+
       if (!result) return res.status(400).json({ message: "no status in your request" });
 
       res.json(result);
@@ -114,11 +137,24 @@ const fishschedulesController = {
         "stock.pond_id",
         "products.id",
         "products.sku",
+        "groups.group_name",
         "ponds.fish_pond_id",
       ])
       .orderBy("repeat.priority", "ASC")
       .addOrderBy("repeat.date_schedules", "ASC")
       .getMany();
+
+    result.map((category) => {
+      category.fishschedulesrepeat.map((repeat) => {
+        repeat.fishschedulestock.forEach(async (key) => {
+          Object.keys(key).forEach((e) => {
+            if (key[e] == null) {
+              delete key[e];
+            }
+          });
+        });
+      });
+    });
 
     res.json({ status: true, data: result });
   },
@@ -157,6 +193,18 @@ const fishschedulesController = {
       .orderBy("repeat.priority", "ASC")
       .addOrderBy("repeat.date_schedules", "ASC")
       .getMany();
+
+    result.map((category) => {
+      category.fishschedulesrepeat.map((repeat) => {
+        repeat.fishschedulestock.forEach(async (key) => {
+          Object.keys(key).forEach((e) => {
+            if (key[e] == null) {
+              delete key[e];
+            }
+          });
+        });
+      });
+    });
 
     res.json({ status: true, data: result });
   },
@@ -200,17 +248,6 @@ const fishschedulesController = {
       .orderBy("repeat.priority", "ASC")
       .addOrderBy("repeat.date_schedules", "ASC")
       .getMany();
-    // const result = await db
-    //   .getRepository(Fishschedulestock)
-    //   .createQueryBuilder("fishschedulestock")
-    //   .leftJoinAndSelect("fishschedulestock.fishschedules", "fishschedules")
-    //   .leftJoinAndSelect("fishschedulestock.products", "products")
-    //   .leftJoinAndSelect("products.fishpond", "fishpond")
-    //   .where(`fishschedules.date_schedules BETWEEN '${start}' AND '${end}'`)
-    //   .andWhere("fishschedules.manage_status = :manage_status", {
-    //     manage_status: manage_status,
-    //   })
-    //   .getMany();
 
     if (!result) return res.status(400).json({ message: "no data body in your request" });
 
@@ -340,7 +377,7 @@ const fishschedulesController = {
 
       // return res.json(findSchedulesRepeat)
       if (!findSchedulesRepeat) return res.json({ status: false, message: "คุณไม่มีไอดีการแจ้งเตือนทำซ้ำนี้" });
-      if (findSchedulesRepeat && findSchedulesRepeat.manage_status !== "สำเร็จ") {
+      if (findSchedulesRepeat && findSchedulesRepeat.manage_status !== "") {
         const priority = await util.manageStatusRepeat(manage_status);
 
         if (findSchedulesRepeat!.repeat_date === null && manage_status === "สำเร็จ")
@@ -379,10 +416,22 @@ const fishschedulesController = {
 
   logSchedulesRepeat: async (req: Request, res: Response) => {
     const fishschedulesRepeatId = Number(req.query.fishschedulesRepeatId);
-    const result = await db.getRepository(Fishscheduleslog).find({ where: { fish_repeat_id: fishschedulesRepeatId } });
+    const result = await db
+      .getRepository(Fishscheduleslog)
+      .findOne({ where: { fish_repeat_id: fishschedulesRepeatId } });
 
-    if (result.length == 0) {
-      res.status(200).json({ status: false, message: "ไม่พบข้อมูล" });
+    if (!result) {
+      return res.status(200).json({ status: false, message: "ไม่พบข้อมูล" });
+    }
+
+    res.status(200).json({ status: true, data: result });
+  },
+
+  logs: async (req: Request, res: Response) => {
+    const result = await db.getRepository(Fishscheduleslog).find();
+
+    if (!result) {
+      return res.status(200).json({ status: false, message: "ไม่พบข้อมูล" });
     }
 
     res.status(200).json({ status: true, data: result });

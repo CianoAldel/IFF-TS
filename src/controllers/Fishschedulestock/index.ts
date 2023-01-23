@@ -16,14 +16,6 @@ const fishscheduleStockController = {
       .createQueryBuilder("fishschedulestock")
       .leftJoinAndSelect("fishschedulestock.fishschedules", "fishschedules")
       .leftJoinAndSelect("fishschedulestock.fishschedulesrepeat", "fishschedulesrepeat")
-      // .leftJoinAndSelect("fishschedulestock.products", "products")
-      // .leftJoinAndSelect("products.fishpond", "fishpond")
-      // .where("fishschedules.status = :status", {
-      //   status: req.query.status,
-      // })
-      // .orWhere("fishschedules.manage_status = :manage_status", {
-      //   manage_status: req.query.manage_status,
-      // })
       .getMany();
 
     if (!result) return res.status(400).json({ message: "no status in your request" });

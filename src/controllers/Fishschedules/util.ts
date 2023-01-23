@@ -6,6 +6,9 @@ import { FishschedulesRepeat } from "../../entities/Fishschedulesrepeat";
 import { Fishscheduleslog } from "../../entities/Fishscheduleslog";
 
 import { Request, Response } from "express";
+import { Products } from "../../entities/Products";
+import { Fishpond } from "../../entities/Fishpond";
+import { Fishgroup } from "../../entities/Fishgroup";
 
 //FishschedulesRepeat
 export async function manageStatusRepeat(manage_status: string) {
@@ -54,7 +57,7 @@ export async function checkRepeatSchedulesDate(
       note,
       findSchedules
     );
-    await insertFishscheduleStock(findSchedules.id);
+    await insertFishscheduleStock(schedulesRepeat.id);
     await insertFishschedulesLog(schedulesRepeat);
 
     const result = await db.getRepository(FishschedulesRepeat).findOneBy({ id: schedulesRepeat.id });
@@ -75,7 +78,7 @@ export async function checkRepeatSchedulesDate(
       note,
       findSchedules!
     );
-    await insertFishscheduleStock(findSchedules.id);
+    await insertFishscheduleStock(schedulesRepeat.id);
     await insertFishschedulesLog(schedulesRepeat);
 
     const result = await db.getRepository(FishschedulesRepeat).findOneBy({ id: schedulesRepeat.id });
@@ -140,6 +143,7 @@ export async function manageStatusUpdateSuccessRepeat(
   //check finish manage_status repeat_date have data
   await saveChangeStatusFishSchedulesRepeat(findSchedules, manage_status, note, priority);
 
+  findSchedules.note = note;
   findSchedules.manage_status = manage_status;
   findSchedules.priority = priority!; //insert data fishschedules repeat
   await db.getRepository(FishschedulesRepeat).save(findSchedules);
@@ -221,4 +225,12 @@ async function insertFishschedulesLog(fishschedulesRepeat: FishschedulesRepeat) 
   addLogRepeat.updatedAt = new Date();
 
   await db.getRepository(Fishscheduleslog).save(addLogRepeat);
+}
+
+export async function removeNull(obj: any) {
+  return Object.fromEntries(
+    Object.entries(obj)
+      .filter(([_, value]) => value != null)
+      .map(([key, value]) => [key, value === Object(value) ? removeNull(value) : value])
+  );
 }
