@@ -10,6 +10,9 @@ const fishgrowController = {
       relations: {
         products: true,
       },
+      order: {
+        createdAt: "DESC",
+      },
     });
 
     if (!data) return res.json({ status: false, message: "ไม่พบข้อมูล" });
@@ -29,27 +32,30 @@ const fishgrowController = {
     const fishgrow = new Fishgrow();
 
     fishgrow.product_id = req.body.product_id;
-    fishgrow.width = req.body.width;
-    fishgrow.length = req.body.length;
-    fishgrow.grade = req.body.grade;
+    fishgrow.size = req.body.size;
     fishgrow.weight = req.body.weight;
     fishgrow.note = req.body.note;
-    fishgrow.status = req.body.status;
     fishgrow.createdAt = new Date();
     fishgrow.updatedAt = new Date();
 
-    const dataId = await db.getRepository(Fishgrow).save(fishgrow);
-    const result = await db.getRepository(Fishgrow).findOneBy({ id: dataId.id });
+    // const dataId = await db.getRepository(Fishgrow).save(fishgrow);
+    // const result = await db.getRepository(Fishgrow).findOneBy({ id: dataId.id });
 
-    if (!result) {
-      return res.json({ status: false, message: "ไม่พบข้อมูล" });
-    }
+    // if (!result) {
+    //   return res.json({ status: false, message: "ไม่พบข้อมูล" });
+    // }
 
-    res.json({ status: true, data: result });
+    res.json({ status: true, message: "เพิ่มข้อมูลสำเร็จ" });
   },
 
   delete: async (req: Request, res: Response) => {
     const id = Number(req.params.id);
+
+    const data = await db.getRepository(Fishgrow).findOneBy({ id: id });
+    if (!data) {
+      return res.json({ status: false, message: "ไม่พบไอดีที่คุณต้องการลบ" });
+    }
+
     await db.getRepository(Fishgrow).delete({ id: id });
 
     res.json({ status: true, message: `ลบข้อมูลที่ ${req.params?.id} เรียบร้อยแล้ว` });
@@ -78,12 +84,9 @@ const fishgrowController = {
     }
 
     data.product_id = req.body.product_id;
-    data.width = req.body.width;
-    data.length = req.body.length;
-    data.grade = req.body.grade;
+    data.size = req.body.size;
     data.weight = req.body.weight;
     data.note = req.body.note;
-    data.status = req.body.status;
     data.createdAt = new Date();
     data.updatedAt = new Date();
 

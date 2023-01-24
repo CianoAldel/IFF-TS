@@ -7,12 +7,12 @@ import { FishHealthType } from "../../interface/FishHealth";
 const fishhealthontroller = {
   show: async (req: Request, res: Response) => {
     const data = await db.getRepository(Fishhealth).find({
-      relations: {
-        products: true,
-      },
+      // relations: {
+      //   products: true,
+      // },
     });
 
-    res.json(data);
+    res.json({ status: true, data: data });
   },
 
   showById: async (req: Request, res: Response) => {
@@ -27,9 +27,9 @@ const fishhealthontroller = {
     const fishgrow = new Fishhealth();
 
     fishgrow.product_id = req.body.product_id;
-    fishgrow.status = req.body.status;
     fishgrow.symptom = req.body.symptom;
-    fishgrow.status_health = req.body.status_health;
+    fishgrow.note = req.body.note;
+    fishgrow.history_date = req.body.history_date;
     fishgrow.createdAt = new Date();
     fishgrow.updatedAt = new Date();
 
@@ -72,9 +72,9 @@ const fishhealthontroller = {
     }
 
     data.product_id = req.body.product_id;
-    data.status = req.body.status;
-    data.user_id = req.body.symptom;
-    data.status_health = req.body.status_health;
+    data.user_id = req.body.user_id;
+    data.symptom = req.body.symptom;
+    data.history_date = req.body.history_date;
     data.createdAt = new Date();
     data.updatedAt = new Date();
 

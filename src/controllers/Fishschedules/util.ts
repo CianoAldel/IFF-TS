@@ -40,14 +40,14 @@ export async function checkRepeatSchedulesDate(
   //save fishscheduleslog
 
   if (
-    findSchedules!.repeat_date! >= currentDate && //more then currentDate
-    findSchedules!.repeat_date !== null &&
+    findSchedules.repeat_date >= currentDate && //more then currentDate
+    findSchedules.repeat_date !== null &&
     manage_status == "สำเร็จ"
   ) {
     //convert repeat_date to date and find day
 
     await saveChangeStatusFishSchedulesRepeat(findSchedules, manage_status, note, priority);
-    const date = new Date(findSchedules!.repeat_date).getDate() - new Date(findSchedules!.date_schedules).getDate();
+    const date = new Date(findSchedules.repeat_date).getDate() - new Date(findSchedules.date_schedules).getDate();
     const repeat_date = moment(findSchedules?.repeat_date).add(date, "day").toDate();
     const oldRepeatDate = findSchedules.repeat_date;
     const schedulesRepeat = await insertFishschedulesRepeat(
@@ -57,7 +57,7 @@ export async function checkRepeatSchedulesDate(
       note,
       findSchedules
     );
-    await insertFishscheduleStock(schedulesRepeat.id);
+    await insertFishscheduleStock(findSchedules.id, schedulesRepeat.id);
     await insertFishschedulesLog(schedulesRepeat);
 
     const result = await db.getRepository(FishschedulesRepeat).findOneBy({ id: schedulesRepeat.id });
@@ -78,7 +78,7 @@ export async function checkRepeatSchedulesDate(
       note,
       findSchedules!
     );
-    await insertFishscheduleStock(schedulesRepeat.id);
+    await insertFishscheduleStock(findSchedules.id, schedulesRepeat.id);
     await insertFishschedulesLog(schedulesRepeat);
 
     const result = await db.getRepository(FishschedulesRepeat).findOneBy({ id: schedulesRepeat.id });
@@ -183,12 +183,12 @@ export async function manageStatusPending(
 
   return res.status(200).json({ success: true, data: "อัพเดทสถานะ รอดำเนินการ แล้ว" });
 }
-async function insertFishscheduleStock(fishschedulesRepeatId: number) {
+async function insertFishscheduleStock(schdulesOldId: number, fishschedulesRepeatId: number) {
   //fishschedulesId string = schedulesId.id
   // loop save array pondId and productId
 
   const findScheduleStock = await db.getRepository(Fishschedulestock).find({
-    where: { fish_repeat_id: fishschedulesRepeatId },
+    where: { fish_repeat_id: schdulesOldId },
   });
 
   for (let index = 0; index < findScheduleStock.length; index++) {
@@ -225,12 +225,4 @@ async function insertFishschedulesLog(fishschedulesRepeat: FishschedulesRepeat) 
   addLogRepeat.updatedAt = new Date();
 
   await db.getRepository(Fishscheduleslog).save(addLogRepeat);
-}
-
-export async function removeNull(obj: any) {
-  return Object.fromEntries(
-    Object.entries(obj)
-      .filter(([_, value]) => value != null)
-      .map(([key, value]) => [key, value === Object(value) ? removeNull(value) : value])
-  );
 }

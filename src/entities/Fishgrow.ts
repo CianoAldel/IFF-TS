@@ -14,23 +14,32 @@ export class Fishgrow {
   @Column({ type: "varchar", nullable: true })
   product_id!: string;
 
-  @Column("varchar", { nullable: true })
-  width!: string;
+  @Column({ type: "int", nullable: true })
+  user_id!: number;
 
-  @Column("int", { nullable: true })
-  length!: number;
+  // @Column("varchar", { nullable: true })
+  // width!: string;
 
-  @Column("varchar", { nullable: true })
-  grade!: string;
+  // @Column("int", { nullable: true })
+  // length!: number;
 
   @Column("float", { nullable: true })
   weight!: number;
 
   @Column("varchar", { nullable: true })
-  note!: string;
+  size!: string;
 
   @Column("varchar", { nullable: true })
-  status!: string;
+  note!: string;
+
+  @Column("datetime", { nullable: true })
+  history_date!: Date;
+
+  // @Column("varchar", { nullable: true })
+  // grade!: string;
+
+  // @Column("varchar", { nullable: true })
+  // status!: string;
 
   @Column("datetime", { nullable: true })
   createdAt!: Date;

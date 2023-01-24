@@ -1,10 +1,6 @@
 import { Request, Response } from "express";
 
 import db from "../../data-source";
-import { Productimages } from "../../entities/Productimages";
-import { IsNull, LessThanOrEqual, Like, MoreThan } from "typeorm";
-import { TypedRequestBody } from "../../interface/TypedRequest";
-import moment from "moment";
 import { Fishgroup } from "../../entities/Fishgroup";
 
 import * as fs from "fs";
@@ -53,7 +49,7 @@ const fishGroupController = {
       "size",
       "price_buy",
       "price_sell",
-      "pond_id",
+      // "pond_id",
       "note",
     ];
 
@@ -103,6 +99,21 @@ const fishGroupController = {
     res.json({ status: true, data: result });
   },
 
+  update: async (req: Request, res: Response) => {
+    //update name group only
+
+    const data = await db.getRepository(Fishgroup).findOneBy({ id: Number(req.params.id) });
+
+    if (!data) {
+      return res.json({ status: false, message: "ไม่พบข้อมูลไอดีนี้" });
+    }
+    data.group_name = req.body.group_name;
+    data.createdAt = new Date();
+    data.updatedAt = new Date();
+
+    res.json({ status: true, message: "อัพเดทข้อมูลสำเร็จแล้ว" });
+  },
+
   getById: async (req: Request, res: Response) => {
     console.log(req.params);
 
@@ -113,6 +124,18 @@ const fishGroupController = {
     }
 
     res.json({ status: true, data: result });
+  },
+
+  delete: async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+
+    const data = await db.getRepository(Fishgroup).findOneBy({});
+    if (!data) {
+      return res.json({ status: false, message: "ไม่พบข้อมูลไอดีนี้" });
+    }
+    await db.getRepository(Fishgroup).delete({ id: id });
+
+    res.json({ status: true, message: `ลบข้อมูลที่ ${req.params?.id} เรียบร้อยแล้ว` });
   },
 };
 

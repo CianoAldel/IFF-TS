@@ -210,7 +210,7 @@ const speciesController = {
         "products.import_date",
         "products.size",
         "fishpond.fish_pond_id",
-        "products.price",
+        "products.price_sell",
         "products.price_buy",
       ])
       .where("products.id = :id", { id: Number(id) })
@@ -267,7 +267,7 @@ const speciesController = {
         "products.import_date",
         "products.size",
         "fishpond.fish_pond_id",
-        "products.price",
+        "products.price_sell",
         "products.price_buy",
       ])
       .where("products.id = :id", { id: Number(id) })

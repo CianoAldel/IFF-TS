@@ -24,6 +24,7 @@ const AppDataSource = new DataSource({
   entities: [join(__dirname, "/entities/*.ts")],
   synchronize: false,
   logging: true,
+  timezone: "Z",
 });
 
 AppDataSource.initialize()

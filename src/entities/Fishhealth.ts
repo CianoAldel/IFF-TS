@@ -20,11 +20,17 @@ export class Fishhealth {
   @Column("varchar", { nullable: true })
   symptom!: number;
 
-  @Column("varchar", { nullable: true })
-  status_health!: string;
+  // @Column("varchar", { nullable: true })
+  // status_health!: string;
+
+  // @Column("varchar", { nullable: true })
+  // status!: number;
 
   @Column("varchar", { nullable: true })
-  status!: number;
+  note!: string;
+
+  @Column("datetime", { nullable: true })
+  history_date!: Date;
 
   @Column("datetime", { nullable: true })
   createdAt!: Date;

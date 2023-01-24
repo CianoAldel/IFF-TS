@@ -5,6 +5,7 @@ export type FishGrowType = {
   length: number;
   grade: string;
   weight: number;
+  size: string;
   note: string;
   status: string;
 };

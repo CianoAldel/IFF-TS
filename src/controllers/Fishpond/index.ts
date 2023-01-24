@@ -9,9 +9,9 @@ import moment from "moment";
 const fishpondController = {
   show: async (req: Request, res: Response) => {
     const data = await db.getRepository(Fishpond).find({
-      relations: {
-        products: true,
-      },
+      // relations: {
+      //   products: true,
+      // },
       order: {
         createdAt: "DESC",
       },
@@ -20,9 +20,9 @@ const fishpondController = {
   },
   showById: async (req: Request, res: Response) => {
     const data = await db.getRepository(Fishpond).findOne({
-      relations: {
-        products: true,
-      },
+      // relations: {
+      //   products: true,
+      // },
       where: {
         id: Number(req.params.id),
       },
