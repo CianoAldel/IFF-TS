@@ -2,10 +2,13 @@ import { NextFunction, Request, Response } from "express";
 
 const middleware = {
   auth: async (req: Request, res: Response, next: NextFunction) => {
-    if (req.isAuthenticated()) {
-      return next();
+    if (req.user?.role == "sellstaff" || req.user?.role == "admin" || req.user?.role == "superadmin") {
+      if (req.isAuthenticated()) {
+        return next();
+      }
     }
-    res.send("คุณยังไม่ได้ทำการเข้าสู่ระบบ โปรดเข้าสู่ระบบก่อนใช้งาน");
+
+    res.status(401).json({ status: false, message: "คุณไม่มีสิทธิ์ในการแก้ไขข้อมูล" });
   },
 
   authSell: async (req: Request, res: Response, next: NextFunction) => {

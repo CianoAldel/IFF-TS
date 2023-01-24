@@ -1,7 +1,7 @@
 import speciesController from "../../controllers/Species";
 import { Router } from "express";
 import upload from "../../middlewares/Multer";
-import middleware from "../../middlewares/passport-auth";
+import { auth } from "../../middlewares/passport-auth";
 
 const router = Router();
 
@@ -23,7 +23,7 @@ router.get("/data", speciesController.data);
 router.get("/data/:id", speciesController.dataId);
 router.get("/data/image/:id", speciesController.dataImageId);
 router.get("/edit/:id", speciesController.edit);
-router.post("/update/:id", speciesController.update);
+router.post("/update/:id", auth, speciesController.update);
 router.get("/delete/:id", speciesController.delete);
 
 router.post(

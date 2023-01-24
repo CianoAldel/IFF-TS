@@ -83,7 +83,7 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/authorization/login/failed" }),
   (req: Request, res: Response, next: NextFunction) => {
     // const data = req.user;
-    res.redirect("/authorization/login/success");
+    res.redirect("/api/authorization/login/success");
   }
 );
 
@@ -96,7 +96,7 @@ router.get(
   passport.authenticate("facebook", { failureRedirect: "/authorization/login/failed" }),
   (req, res, next) => {
     // res.redirect(CLIENT_URL); //return callback ไปที่ domain
-    res.redirect("/authorization/login/success");
+    res.redirect("/api/authorization/login/success");
   }
 );
 
@@ -109,7 +109,7 @@ router.get("/line/login/page", (req: Request, res: Response) => {
 //callback code for get token line
 router.get("/line/callback", (req: Request, res: Response) => {
   code = req.query.code as string;
-  res.redirect("/authorization/line/token");
+  res.redirect("/api/authorization/line/token");
 });
 
 //sign token
@@ -132,7 +132,7 @@ router.get("/line/token", (req: Request, res: Response) => {
     )
     .then((response) => {
       token = response.data.id_token;
-      res.redirect("/authorization/line/verify");
+      res.redirect("/api/authorization/line/verify");
     })
     .catch((err) => {
       res.json(err);
@@ -192,11 +192,11 @@ router.get("/line/verify", (req: Request, res: Response) => {
             await db.getRepository(Accounts).save(accounts);
 
             // dataUser = user;
-            res.redirect("/authorization/login/success");
+            res.redirect("/api/authorization/login/success");
           }
           // dataUser = result!;
         });
-      res.redirect("/authorization/login/success");
+      res.redirect("/api/authorization/login/success");
     })
     .catch((err) => {
       res.json(err);
