@@ -3,6 +3,7 @@ import { Fishhealth } from "../../entities/Fishhealth";
 import db from "../../data-source";
 import { TypedRequestBody } from "../../interface/TypedRequest";
 import { FishHealthType } from "../../interface/FishHealth";
+import { Products } from "../../entities/Products";
 
 const fishhealthontroller = {
   show: async (req: Request, res: Response) => {
@@ -26,6 +27,10 @@ const fishhealthontroller = {
   add: async (req: TypedRequestBody<FishHealthType>, res: Response) => {
     const fishgrow = new Fishhealth();
 
+    const data = await db.getRepository(Products).findOneBy({ id: Number(req.body.product_id) });
+
+    if (!data) return res.json({ status: false, message: "ไม่พบข้อมูล" });
+
     fishgrow.product_id = req.body.product_id;
     fishgrow.symptom = req.body.symptom;
     fishgrow.note = req.body.note;
@@ -34,10 +39,6 @@ const fishhealthontroller = {
     fishgrow.updatedAt = new Date();
 
     const dataId = await db.getRepository(Fishhealth).save(fishgrow);
-
-    const data = await db.getRepository(Fishhealth).findOneBy({ id: Number(dataId.id) });
-
-    if (!data) return res.json({ status: false, message: "ไม่พบข้อมูล" });
 
     res.json({ status: true, data: data });
   },

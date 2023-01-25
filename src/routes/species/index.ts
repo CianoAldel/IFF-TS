@@ -23,7 +23,7 @@ router.get("/data", speciesController.data);
 router.get("/data/:id", speciesController.dataId);
 router.get("/data/image/:id", speciesController.dataImageId);
 router.get("/edit/:id", speciesController.edit);
-router.post("/update/:id", auth, speciesController.update);
+router.post("/update/:id", speciesController.update);
 router.get("/delete/:id", speciesController.delete);
 
 router.post(

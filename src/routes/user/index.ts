@@ -3,7 +3,7 @@ import { Router } from "express";
 import auth from "../../middlewares/passport-auth";
 const router = Router();
 
-router.put(`/`, userController.update);
+// router.put(`/`, userController.update);
 router.get("/", userController.gets);
 router.get("/getById", userController.getById);
 router.get("/getByRole", userController.getByRole);

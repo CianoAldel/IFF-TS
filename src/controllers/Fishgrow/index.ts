@@ -3,6 +3,7 @@ import db from "../../data-source";
 import { Fishgrow } from "../../entities/Fishgrow";
 import { FishGrowType } from "../../interface/FishGrow";
 import { TypedRequestBody } from "../../interface/TypedRequest";
+import { Products } from "../../entities/Products";
 
 const fishgrowController = {
   show: async (req: Request, res: Response) => {
@@ -31,6 +32,12 @@ const fishgrowController = {
   add: async (req: TypedRequestBody<FishGrowType>, res: Response) => {
     const fishgrow = new Fishgrow();
 
+    const result = await db.getRepository(Products).findOneBy({ id: Number(req.body.product_id) });
+
+    if (!result) {
+      return res.json({ status: false, message: "ไม่พบข้อมูล" });
+    }
+
     fishgrow.product_id = req.body.product_id;
     fishgrow.size = req.body.size;
     fishgrow.weight = req.body.weight;
@@ -38,12 +45,7 @@ const fishgrowController = {
     fishgrow.createdAt = new Date();
     fishgrow.updatedAt = new Date();
 
-    // const dataId = await db.getRepository(Fishgrow).save(fishgrow);
-    // const result = await db.getRepository(Fishgrow).findOneBy({ id: dataId.id });
-
-    // if (!result) {
-    //   return res.json({ status: false, message: "ไม่พบข้อมูล" });
-    // }
+    const dataId = await db.getRepository(Fishgrow).save(fishgrow);
 
     res.json({ status: true, message: "เพิ่มข้อมูลสำเร็จ" });
   },
