@@ -49,7 +49,6 @@ const fishGroupController = {
       "size",
       "price_buy",
       "price_sell",
-      // "pond_id",
       "note",
     ];
 
@@ -68,6 +67,7 @@ const fishGroupController = {
         const addFish = new Products();
         data.map(async (result) => {
           addFish.group_id = id;
+          addFish.pond_id = req.body.pond_id;
           addFish.farm = result.farm;
           addFish.name = result.species;
           addFish.bloodline = result.bloodline;
@@ -80,7 +80,6 @@ const fishGroupController = {
           addFish.price_buy = Number(result.price_buy);
           addFish.createdAt = new Date();
           addFish.updatedAt = new Date();
-          // addFish.pond_id = Number(result.pond_id);
           addFish.note = result.note;
 
           await db.getRepository(Products).save(addFish);
@@ -129,7 +128,7 @@ const fishGroupController = {
   delete: async (req: Request, res: Response) => {
     const id = Number(req.params.id);
 
-    const data = await db.getRepository(Fishgroup).findOneBy({});
+    const data = await db.getRepository(Fishgroup).findOneBy({ id: id });
     if (!data) {
       return res.json({ status: false, message: "ไม่พบข้อมูลไอดีนี้" });
     }

@@ -7,9 +7,9 @@ import { TypedRequestBody } from "../../interface/TypedRequest";
 const fishgrowController = {
   show: async (req: Request, res: Response) => {
     const data = await db.getRepository(Fishgrow).find({
-      relations: {
-        products: true,
-      },
+      // relations: {
+      //   products: true,
+      // },
       order: {
         createdAt: "DESC",
       },
